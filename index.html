@@ -1,0 +1,2182 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VISTA Engg Solutions — Operations Hub</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --bg-base: #070b14;
+      --bg-panel: #0a0f1d;
+      --bg-card: #0f172a;
+      --bg-inner: #090d16;
+      --border-color: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    html:not(.dark) {
+      --bg-base: #f1f5f9;
+      --bg-panel: #ffffff;
+      --bg-card: #ffffff;
+      --bg-inner: #f8fafc;
+      --border-color: #cbd5e1;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+    }
+    .panel-box { background-color: var(--bg-panel); border-color: var(--border-color); }
+    .card-box { background-color: var(--bg-card); border-color: var(--border-color); }
+    .inner-box { background-color: var(--bg-inner); border-color: var(--border-color); }
+    .text-sub { color: var(--text-muted); }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-base); }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+    /* Interactive Robot Animations */
+    @keyframes robotBob {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-7px); }
+    }
+    @keyframes robotWave {
+      0%, 100% { transform: rotate(0deg); }
+      20% { transform: rotate(-28deg); }
+      40% { transform: rotate(10deg); }
+      60% { transform: rotate(-24deg); }
+      80% { transform: rotate(6deg); }
+    }
+    @keyframes robotWalk {
+      0% { transform: translateX(-40px); }
+      50% { transform: translateX(40px); }
+      100% { transform: translateX(-40px); }
+    }
+    @keyframes robotWalkLegL {
+      0%, 100% { transform: rotate(15deg); }
+      50% { transform: rotate(-15deg); }
+    }
+    @keyframes robotWalkLegR {
+      0%, 100% { transform: rotate(-15deg); }
+      50% { transform: rotate(15deg); }
+    }
+
+    .animate-robot-body { animation: robotBob 3.6s ease-in-out infinite; }
+    .animate-robot-wave { transform-origin: 22px 130px; animation: robotWave 2.2s ease-in-out infinite; }
+    .animate-robot-patrol { animation: robotWalk 9s ease-in-out infinite; }
+    .animate-leg-l { transform-origin: 75px 165px; animation: robotWalkLegL 0.8s ease-in-out infinite; }
+    .animate-leg-r { transform-origin: 105px 165px; animation: robotWalkLegR 0.8s ease-in-out infinite; }
+
+    /* Row Color Indicators */
+    .row-green { background-color: rgba(6, 78, 59, 0.28); border-left: 4px solid #10b981 !important; }
+    .row-yellow { background-color: rgba(120, 53, 15, 0.3); border-left: 4px solid #f59e0b !important; }
+    .row-red { background-color: rgba(127, 29, 29, 0.38); border-left: 4px solid #ef4444 !important; }
+    .row-hold { background-color: rgba(51, 65, 85, 0.35); border-left: 4px solid #94a3b8 !important; }
+    .row-neutral { border-left: 4px solid #334155 !important; }
+  </style>
+</head>
+
+<body class="font-sans min-h-screen flex selection:bg-purple-600 selection:text-white overflow-hidden transition-colors duration-200">
+
+  <!-- ========================================================================= -->
+  <!-- 0. LOGIN SCREEN WITH ANIMATED WALKING & TALKING ROBOTS -->
+  <!-- ========================================================================= -->
+  <div id="loginScreen" class="fixed inset-0 z-50 bg-[#070b14] flex flex-col items-center justify-center p-4 overflow-hidden">
+    
+    <!-- Background Animated Robot Walk & Talk Scene -->
+    <div class="w-full max-w-4xl h-44 mb-3 relative flex items-center justify-between px-8 pointer-events-none select-none">
+      
+      <!-- Robot 1: Patrol Walker -->
+      <div class="relative animate-robot-patrol flex flex-col items-center">
+        <div id="speechBubble1" class="bg-purple-950/90 text-purple-200 border border-purple-500/60 px-3 py-1 rounded-2xl text-[11px] font-mono font-bold shadow-xl mb-2 whitespace-nowrap">
+          "Morning Unit 2! Ready for system telemetry?"
+        </div>
+        <svg viewBox="0 0 180 180" class="w-24 h-24 drop-shadow-[0_10px_20px_rgba(168,85,247,0.3)]">
+          <circle cx="90" cy="25" r="7" fill="#38bdf8" />
+          <line x1="90" y1="25" x2="90" y2="45" stroke="#38bdf8" stroke-width="3" />
+          <rect x="55" y="45" width="70" height="52" rx="18" fill="#1e293b" stroke="#7c3aed" stroke-width="2" />
+          <circle cx="75" cy="68" r="7" fill="#2dd4bf" />
+          <circle cx="105" cy="68" r="7" fill="#2dd4bf" />
+          <rect x="50" y="102" width="80" height="50" rx="16" fill="#0f172a" stroke="#7c3aed" stroke-width="2" />
+          <g class="animate-leg-l"><rect x="68" y="152" width="12" height="24" rx="5" fill="#38bdf8" /></g>
+          <g class="animate-leg-r"><rect x="100" y="152" width="12" height="24" rx="5" fill="#38bdf8" /></g>
+        </svg>
+      </div>
+
+      <!-- Robot 2: Station Responder -->
+      <div class="relative flex flex-col items-center">
+        <div id="speechBubble2" class="bg-teal-950/90 text-teal-200 border border-teal-500/60 px-3 py-1 rounded-2xl text-[11px] font-mono font-bold shadow-xl mb-2 whitespace-nowrap">
+          "All VISTA operational pipelines nominal @ 100%!"
+        </div>
+        <svg viewBox="0 0 180 180" class="w-24 h-24 drop-shadow-[0_10px_20px_rgba(45,212,191,0.3)]">
+          <circle cx="90" cy="25" r="7" fill="#2dd4bf" />
+          <line x1="90" y1="25" x2="90" y2="45" stroke="#2dd4bf" stroke-width="3" />
+          <rect x="55" y="45" width="70" height="52" rx="18" fill="#1e293b" stroke="#0d9488" stroke-width="2" />
+          <circle cx="75" cy="68" r="7" fill="#a855f7" />
+          <circle cx="105" cy="68" r="7" fill="#a855f7" />
+          <rect x="50" y="102" width="80" height="50" rx="16" fill="#0f172a" stroke="#0d9488" stroke-width="2" />
+          <rect x="70" y="152" width="12" height="20" rx="5" fill="#2dd4bf" />
+          <rect x="98" y="152" width="12" height="20" rx="5" fill="#2dd4bf" />
+        </svg>
+      </div>
+
+    </div>
+
+    <!-- Login Gateway Card -->
+    <div class="bg-[#0f172a] border border-slate-800 rounded-3xl p-8 max-w-md w-full shadow-2xl relative z-10">
+      
+      <!-- Logo Banner -->
+      <div class="flex items-center gap-3 mb-5 bg-white px-4 py-2 rounded-xl w-fit shadow-md">
+        <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
+          <circle cx="20" cy="20" r="7" fill="#c026d3" />
+          <circle cx="36" cy="18" r="6.5" fill="#a21caf" />
+          <circle cx="52" cy="20" r="6" fill="#7c3aed" />
+          <circle cx="66" cy="26" r="5.5" fill="#4f46e5" />
+          <circle cx="78" cy="36" r="5" fill="#2563eb" />
+          <circle cx="86" cy="50" r="4.5" fill="#0891b2" />
+          <circle cx="88" cy="66" r="4" fill="#0d9488" />
+          <circle cx="84" cy="80" r="3.5" fill="#059669" />
+          <circle cx="22" cy="36" r="6.5" fill="#d946ef" />
+          <circle cx="38" cy="34" r="6" fill="#9333ea" />
+          <circle cx="52" cy="36" r="5.5" fill="#6366f1" />
+        </svg>
+        <div class="leading-none">
+          <span class="text-slate-950 font-black tracking-tight text-lg block font-sans">VISTA<span class="text-[9px] align-top ml-0.5">TM</span></span>
+          <span class="text-[8px] font-bold text-slate-700 uppercase tracking-widest block">Innovation @ work</span>
+        </div>
+      </div>
+
+      <h2 class="text-xl font-bold text-white mb-1">Corporate Access Gateway</h2>
+      <p class="text-xs text-slate-400 mb-5">Select your account profile to access your dedicated role environment.</p>
+
+      <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-[11px] font-mono uppercase text-slate-400 mb-1">Account Select *</label>
+          <select id="loginUserSelect" class="w-full bg-[#090d16] border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
+            <!-- Dynamic Users -->
+          </select>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-[11px] font-mono uppercase text-slate-400">Passkey</label>
+            <button type="button" onclick="triggerForgotPasswordFromLogin()" class="text-[11px] font-semibold text-purple-400 hover:text-purple-300 underline">
+              Forgot Password?
+            </button>
+          </div>
+          <input type="password" id="loginPassword" value="••••••••" class="w-full bg-[#090d16] border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500" />
+        </div>
+
+        <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold transition shadow-lg mt-2">
+          Authenticate & Launch Session
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 1. LEFT-HAND NAVIGATION PANE -->
+  <!-- ========================================================================= -->
+  <aside id="sidebar" class="w-64 panel-box border-r flex flex-col justify-between transition-all duration-300 z-30 select-none">
+    
+    <div>
+      <!-- Corporate Logo -->
+      <div class="p-4 border-b border-slate-700/50 flex items-center justify-between">
+        <div class="flex items-center gap-2.5 bg-white px-2.5 py-1.5 rounded-xl shadow-md cursor-pointer" onclick="navigateTo('welcome')">
+          <svg width="22" height="22" viewBox="0 0 100 100" fill="none">
+            <circle cx="20" cy="20" r="7" fill="#c026d3" />
+            <circle cx="36" cy="18" r="6.5" fill="#a21caf" />
+            <circle cx="52" cy="20" r="6" fill="#7c3aed" />
+            <circle cx="66" cy="26" r="5.5" fill="#4f46e5" />
+            <circle cx="78" cy="36" r="5" fill="#2563eb" />
+            <circle cx="86" cy="50" r="4.5" fill="#0891b2" />
+            <circle cx="88" cy="66" r="4" fill="#0d9488" />
+            <circle cx="84" cy="80" r="3.5" fill="#059669" />
+          </svg>
+          <div class="leading-none">
+            <span class="text-slate-950 font-black tracking-tight text-sm block">VISTA<span class="text-[8px] align-top">TM</span></span>
+            <span class="text-[7px] font-bold text-slate-700 uppercase tracking-widest block">Innovation @ work</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current Profile Card -->
+      <div class="p-3 mx-3 my-3 card-box border rounded-xl flex items-center justify-between">
+        <div class="flex items-center gap-3 overflow-hidden">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-600 to-teal-500 flex items-center justify-center font-bold text-white text-xs">
+            <span id="userAvatarText">S</span>
+          </div>
+          <div class="overflow-hidden">
+            <p id="sidebarUserName" class="text-xs font-bold truncate">Saravanan M</p>
+            <span id="sidebarUserRole" class="text-[10px] font-mono uppercase text-purple-400">ADMIN</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="px-3 space-y-1">
+        <button onclick="navigateTo('welcome')" id="nav-welcome" class="nav-item w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-sub hover:text-purple-400 hover:bg-purple-950/20 transition">
+          <i class="fa-solid fa-robot text-purple-400 w-4 text-center"></i>
+          <span>Welcome Portal</span>
+        </button>
+
+        <button onclick="navigateTo('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-sub hover:text-teal-400 hover:bg-teal-950/20 transition">
+          <i class="fa-solid fa-gauge-high text-teal-400 w-4 text-center"></i>
+          <span id="navDashboardLabel">Operations Matrix</span>
+        </button>
+
+        <button onclick="navigateTo('workload')" id="nav-workload" class="nav-item w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-sub hover:text-sky-400 hover:bg-sky-950/20 transition">
+          <i class="fa-solid fa-table-list text-sky-400 w-4 text-center"></i>
+          <span id="navWorkloadLabel">Workload Register</span>
+        </button>
+
+        <!-- DELEGATED TASKS TRACKER TAB -->
+        <button onclick="navigateTo('delegated')" id="nav-delegated" class="nav-item w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-sub hover:text-indigo-400 hover:bg-indigo-950/20 transition">
+          <i class="fa-solid fa-diagram-project text-indigo-400 w-4 text-center"></i>
+          <span>Delegated Tasks</span>
+        </button>
+
+        <button onclick="navigateTo('curves')" id="nav-curves" class="nav-item w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-sub hover:text-emerald-400 hover:bg-emerald-950/20 transition">
+          <i class="fa-solid fa-chart-line text-emerald-400 w-4 text-center"></i>
+          <span>Visual Curves & Metrics</span>
+        </button>
+
+        <button onclick="navigateTo('usage')" id="nav-usage" class="nav-item w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-sub hover:text-blue-400 hover:bg-blue-950/20 transition">
+          <i class="fa-solid fa-clock-rotate-left text-blue-400 w-4 text-center"></i>
+          <span>Usage & Activity</span>
+        </button>
+
+        <button onclick="navigateTo('messages')" id="nav-messages" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-sub hover:text-amber-400 hover:bg-amber-950/20 transition">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-comments text-amber-400 w-4 text-center"></i>
+            <span>Task Message Box</span>
+          </div>
+          <span id="unreadNotifCountPill" class="hidden bg-red-600 text-white text-[10px] font-mono px-1.5 py-0.2 rounded-full">0</span>
+        </button>
+
+        <!-- IT & Admin Specialized Tab -->
+        <div id="itAdminNavGroup" class="pt-2 border-t border-slate-700/50">
+          <span class="text-[9px] font-mono uppercase text-sub px-3 tracking-wider block mb-1">Security & Access</span>
+          <button onclick="navigateTo('itSecurity')" id="nav-itSecurity" class="nav-item w-full flex items-center gap-3 px-3 py-1.5 rounded-xl text-xs font-semibold text-teal-400 hover:bg-teal-950/30 transition">
+            <i class="fa-solid fa-id-card-clip text-teal-400 w-4 text-center"></i>
+            <span>IT & Password Portal</span>
+          </button>
+        </div>
+
+        <!-- Task Creation Button (Hidden for IT Role) -->
+        <div id="assignTaskBtnWrap" class="pt-2">
+          <button onclick="openTaskModal()" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-purple-300 bg-purple-950/40 border border-purple-800/60 hover:bg-purple-900/60 transition">
+            <i class="fa-solid fa-plus-circle text-purple-400 w-4 text-center"></i>
+            <span>Assign New Task</span>
+          </button>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Bottom Theme Toggle & Logout -->
+    <div class="p-3 border-t border-slate-700/50 space-y-2">
+      <button onclick="toggleTheme()" class="w-full flex items-center justify-between px-3 py-1.5 rounded-xl inner-box border text-xs text-sub hover:text-purple-400 transition">
+        <span class="flex items-center gap-2"><i id="themeIcon" class="fa-solid fa-moon text-purple-400"></i> Mode</span>
+        <span id="themeLabel" class="font-mono text-[10px]">Dark</span>
+      </button>
+
+      <button onclick="logoutSession()" class="w-full flex items-center justify-center gap-2 py-2 rounded-xl inner-box hover:bg-red-950/40 hover:text-red-400 border text-xs font-semibold text-sub transition">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        <span>Logout Session</span>
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN WORKSPACE CONTAINER -->
+  <!-- ========================================================================= -->
+  <div class="flex-1 flex flex-col h-screen overflow-hidden">
+    
+    <!-- Top Utility Header -->
+    <header class="h-14 border-b panel-box px-6 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-xs font-mono uppercase text-sub" id="currentViewBreadcrumb">Welcome Portal</span>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <!-- Live Precision Clock -->
+        <div class="flex items-center gap-2 inner-box px-3 py-1 rounded-lg border">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="liveSecClock" class="font-mono text-xs text-teal-400 font-bold">00:00:00</span>
+        </div>
+
+        <!-- Session Duration -->
+        <div class="hidden sm:flex items-center gap-1.5 inner-box px-3 py-1 rounded-lg border text-xs font-mono text-sub">
+          <i class="fa-regular fa-clock text-purple-400 text-[11px]"></i>
+          <span>Session: <strong id="sessionDurationDisplay" class="text-main">00m 00s</strong></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Scrollable Workspace -->
+    <main class="flex-1 overflow-y-auto p-6" id="mainWorkspace">
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 1: WELCOME PORTAL -->
+      <!-- ========================================================================= -->
+      <section id="view-welcome" class="view-panel space-y-8 max-w-5xl mx-auto py-6">
+        
+        <div class="flex flex-col items-center justify-center text-center">
+          <div class="relative cursor-pointer mb-3" onclick="triggerRobotSpeech()">
+            <div id="robotSpeechBubble" class="absolute -top-12 left-1/2 -translate-x-1/2 card-box border border-purple-500 text-purple-400 px-4 py-1.5 rounded-full text-xs font-bold shadow-xl whitespace-nowrap transition-all duration-300">
+              👋 Hi! Click me to interact.
+            </div>
+
+            <div class="w-48 h-48 animate-robot-body drop-shadow-[0_20px_35px_rgba(124,58,237,0.35)]">
+              <svg viewBox="0 0 200 200" class="w-full h-full">
+                <line x1="100" y1="42" x2="100" y2="18" stroke="#0ea5e9" stroke-width="4" stroke-linecap="round" />
+                <circle cx="100" cy="14" r="7" fill="#38bdf8" />
+                <rect x="52" y="42" width="96" height="70" rx="28" fill="#1e293b" stroke="#475569" stroke-width="3" />
+                <rect x="62" y="52" width="76" height="50" rx="18" fill="#0f172a" />
+                <g fill="#2dd4bf" id="robotEyes">
+                  <circle cx="81" cy="76" r="9" />
+                  <circle cx="84" cy="73" r="3" fill="#ffffff" />
+                  <circle cx="119" cy="76" r="9" />
+                  <circle cx="122" cy="73" r="3" fill="#ffffff" />
+                </g>
+                <path d="M 88 92 Q 100 100 112 92" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" />
+                <rect x="92" y="112" width="16" height="8" rx="3" fill="#475569" />
+                <rect x="44" y="120" width="112" height="66" rx="24" fill="#1e293b" stroke="#475569" stroke-width="3" />
+                <rect x="68" y="130" width="64" height="34" rx="8" fill="#0f172a" />
+                <path d="M 74 147 L 84 147 L 90 137 L 96 155 L 102 147 L 126 147" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" />
+                <g class="animate-robot-wave">
+                  <rect x="18" y="126" width="14" height="42" rx="7" fill="#38bdf8" stroke="#0ea5e9" stroke-width="2" />
+                  <circle cx="25" cy="172" r="7" fill="#38bdf8" />
+                </g>
+                <rect x="168" y="126" width="14" height="42" rx="7" fill="#334155" stroke="#475569" stroke-width="2" />
+              </svg>
+            </div>
+          </div>
+
+          <h1 class="text-3xl sm:text-4xl font-black mb-2">
+            <span id="welcomeGreeting">Good Afternoon</span>, <span id="welcomeUserNameHero" class="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-sky-400 to-purple-400">User</span>
+          </h1>
+          <p class="text-sub text-xs sm:text-sm max-w-xl">
+            Operations workspace for <strong class="text-purple-400">VISTA Engg Solutions Private Limited</strong>. Logged in and active.
+          </p>
+        </div>
+
+        <div class="w-full card-box border rounded-2xl p-6 shadow-xl relative overflow-hidden text-left">
+          <div class="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-teal-400 via-indigo-500 to-purple-600"></div>
+          <span class="text-[10px] uppercase font-mono tracking-widest text-sub block mb-2">Daily Operational Insight</span>
+          <p class="text-base sm:text-lg font-medium italic mb-3 leading-relaxed">
+            "Engineering excellence is achieved through unyielding precision and prompt delivery."
+          </p>
+          <span class="text-xs text-purple-400 font-semibold tracking-wide">— VISTA Operations Standards</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="card-box border p-4 rounded-xl flex items-center gap-3">
+            <div class="p-3 bg-purple-950/60 text-purple-400 rounded-lg"><i class="fa-solid fa-list-check text-lg"></i></div>
+            <div>
+              <span class="text-[10px] uppercase font-mono text-sub">Assigned Workload</span>
+              <p id="heroTaskCount" class="text-lg font-bold">0 Tasks Active</p>
+            </div>
+          </div>
+
+          <div class="card-box border p-4 rounded-xl flex items-center gap-3">
+            <div class="p-3 bg-teal-950/60 text-teal-400 rounded-lg"><i class="fa-solid fa-award text-lg"></i></div>
+            <div>
+              <span class="text-[10px] uppercase font-mono text-sub">Efficiency Rating</span>
+              <p id="heroEfficiencyRate" class="text-lg font-bold text-emerald-400">100%</p>
+            </div>
+          </div>
+
+          <div class="card-box border p-4 rounded-xl flex items-center gap-3">
+            <div class="p-3 bg-blue-950/60 text-blue-400 rounded-lg"><i class="fa-solid fa-business-time text-lg"></i></div>
+            <div>
+              <span class="text-[10px] uppercase font-mono text-sub">Session Activity</span>
+              <p id="heroSessionTime" class="text-lg font-bold font-mono">00m 00s</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-4 justify-center pt-2">
+          <button onclick="navigateTo('dashboard')" class="px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-lg transition">
+            Open Operations Matrix
+          </button>
+          <button onclick="navigateTo('workload')" class="px-6 py-3 rounded-xl card-box border hover:bg-slate-800 text-xs font-bold transition">
+            View Workload Register
+          </button>
+        </div>
+
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 2: OPERATIONS DASHBOARD -->
+      <!-- ========================================================================= -->
+      <section id="view-dashboard" class="view-panel hidden space-y-6">
+        
+        <div class="bg-gradient-to-r from-purple-900 via-indigo-950 to-slate-900 border border-purple-800/60 rounded-2xl p-5 shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 text-white">
+          <div>
+            <span class="text-[10px] font-mono uppercase tracking-widest text-purple-300">VISTA Engg Solutions Private Limited</span>
+            <h2 id="dashboardBannerTitle" class="text-2xl font-black tracking-wide">OPERATIONS DASHBOARD</h2>
+            <p id="dashboardBannerSub" class="text-xs text-slate-300 mt-0.5">Click any metric card below to filter the Workload Register.</p>
+          </div>
+        </div>
+
+        <!-- Metric Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div onclick="filterWorkloadFromCard('ALL')" class="cursor-pointer card-box border hover:border-purple-500 p-4 rounded-xl transition">
+            <div class="flex justify-between items-center text-sub text-xs font-mono uppercase mb-1">
+              <span>Total</span>
+              <i class="fa-solid fa-layer-group text-purple-400"></i>
+            </div>
+            <span id="mTotal" class="text-2xl font-black">0</span>
+          </div>
+
+          <div onclick="filterWorkloadFromCard('COMPLETED')" class="cursor-pointer card-box border hover:border-emerald-500 p-4 rounded-xl transition">
+            <div class="flex justify-between items-center text-emerald-400 text-xs font-mono uppercase mb-1">
+              <span>Completed</span>
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <span id="mCompleted" class="text-2xl font-black text-emerald-400">0</span>
+          </div>
+
+          <div onclick="filterWorkloadFromCard('ON_PROGRESS')" class="cursor-pointer card-box border hover:border-sky-500 p-4 rounded-xl transition">
+            <div class="flex justify-between items-center text-sky-400 text-xs font-mono uppercase mb-1">
+              <span>On Progress</span>
+              <i class="fa-solid fa-spinner"></i>
+            </div>
+            <span id="mProgress" class="text-2xl font-black text-sky-400">0</span>
+          </div>
+
+          <div onclick="filterWorkloadFromCard('PENDING')" class="cursor-pointer card-box border hover:border-slate-500 p-4 rounded-xl transition">
+            <div class="flex justify-between items-center text-sub text-xs font-mono uppercase mb-1">
+              <span>Pending</span>
+              <i class="fa-solid fa-clock"></i>
+            </div>
+            <span id="mPending" class="text-2xl font-black">0</span>
+          </div>
+
+          <div onclick="filterWorkloadFromCard('HOLD')" class="cursor-pointer card-box border hover:border-amber-500 p-4 rounded-xl transition">
+            <div class="flex justify-between items-center text-amber-400 text-xs font-mono uppercase mb-1">
+              <span>Hold / Dep</span>
+              <i class="fa-solid fa-circle-pause"></i>
+            </div>
+            <span id="mHold" class="text-2xl font-black text-amber-400">0</span>
+          </div>
+
+          <div onclick="filterWorkloadFromCard('OVERDUE')" class="cursor-pointer card-box border hover:border-red-500 p-4 rounded-xl transition">
+            <div class="flex justify-between items-center text-red-400 text-xs font-mono uppercase mb-1">
+              <span>Overdue</span>
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <span id="mOverdue" class="text-2xl font-black text-red-500">0</span>
+          </div>
+        </div>
+
+        <!-- Master Matrix Table -->
+        <div class="card-box border rounded-2xl overflow-hidden shadow-2xl">
+          <div class="px-5 py-3.5 panel-box border-b flex justify-between items-center">
+            <h3 class="text-xs font-bold uppercase tracking-wider">
+              <i class="fa-solid fa-table-cells text-purple-400 mr-2"></i> 
+              <span id="matrixHeaderTitle">Employee Performance Matrix</span>
+            </h3>
+            <span class="text-[10px] font-mono text-sub">Target $\ge 80\%$ for Green</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-center border-collapse">
+              <thead>
+                <tr class="inner-box font-semibold border-b">
+                  <th class="py-2.5 px-3 border border-slate-700/50">SL.No</th>
+                  <th class="py-2.5 px-4 border border-slate-700/50 text-left">Employee Name</th>
+                  <th class="py-2.5 px-3 border border-slate-700/50">Total</th>
+                  <th class="py-2.5 px-3 border border-slate-700/50">Completed</th>
+                  <th class="py-2.5 px-3 border border-slate-700/50">On Progress</th>
+                  <th class="py-2.5 px-3 border border-slate-700/50">Pending</th>
+                  <th class="py-2.5 px-3 border border-slate-700/50">Hold</th>
+                  <th class="py-2.5 px-3 border border-slate-700/50">Late</th>
+                  <th class="py-2.5 px-3 border border-slate-700/50">Overdue</th>
+                  <th class="py-2.5 px-3 border border-slate-700/50">Final Total</th>
+                  <th class="py-2.5 px-4 border border-slate-700/50">Overall Performance Rating</th>
+                </tr>
+              </thead>
+              <tbody id="matrixTableBody" class="divide-y divide-slate-700/50"></tbody>
+              <tfoot id="matrixTableFoot" class="font-bold inner-box border-t-2"></tfoot>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 3: WORKLOAD EXECUTION REGISTER (Showing Assigned Date + Exact Time) -->
+      <!-- ========================================================================= -->
+      <section id="view-workload" class="view-panel hidden space-y-4">
+        
+        <div class="flex flex-wrap items-center justify-between gap-3 card-box p-4 rounded-xl border">
+          <div class="flex items-center gap-3">
+            <h2 class="text-base font-bold">Workload Execution Register</h2>
+            <span id="activeFilterBadge" class="text-xs bg-purple-950 text-purple-300 border border-purple-800 px-2.5 py-0.5 rounded-full font-mono">
+              My Execution Tasks
+            </span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="clearWorkloadFilters()" class="text-xs px-3 py-1.5 rounded-lg inner-box border hover:bg-slate-700 text-sub">
+              Clear Filters
+            </button>
+          </div>
+        </div>
+
+        <div class="card-box border rounded-2xl overflow-hidden shadow-2xl">
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left border-collapse min-w-[1380px]">
+              <thead>
+                <tr class="inner-box text-sub uppercase font-mono border-b">
+                  <th class="p-3 border-r border-slate-700/50 text-center">S.No</th>
+                  <th class="p-3 border-r border-slate-700/50 text-center">CW</th>
+                  <th class="p-3 border-r border-slate-700/50">Assigned Date & Time</th>
+                  <th class="p-3 border-r border-slate-700/50">Requester</th>
+                  <th class="p-3 border-r border-slate-700/50">Assigned To</th>
+                  <th class="p-3 border-r border-slate-700/50">Task Title & Category</th>
+                  <th class="p-3 border-r border-slate-700/50">Status</th>
+                  <th class="p-3 border-r border-slate-700/50 text-center">Target Deadline</th>
+                  <th class="p-3 border-r border-slate-700/50 text-center bg-purple-950/20">Precision Countdown / Closure Time</th>
+                  <th class="p-3 border-r border-slate-700/50">Proof of Completion (Photo)</th>
+                  <th class="p-3 border-r border-slate-700/50 text-center">Comments</th>
+                  <th class="p-3 text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="workloadTableBody" class="divide-y divide-slate-700/50"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 3B: DELEGATED TASKS TRACKER -->
+      <!-- ========================================================================= -->
+      <section id="view-delegated" class="view-panel hidden space-y-4">
+        
+        <div class="card-box p-4 rounded-xl border flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base font-bold">Delegated Tasks Tracker</h2>
+            <p class="text-xs text-sub">Real-time status tracking for tasks assigned by you to individual team members.</p>
+          </div>
+          <span class="text-xs font-mono text-indigo-400 bg-indigo-950 border border-indigo-800 px-3 py-1 rounded-full">
+            Live Synchronized
+          </span>
+        </div>
+
+        <div class="card-box border rounded-2xl overflow-hidden shadow-2xl">
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left border-collapse min-w-[1380px]">
+              <thead>
+                <tr class="inner-box text-sub uppercase font-mono border-b">
+                  <th class="p-3 border-r border-slate-700/50 text-center">S.No</th>
+                  <th class="p-3 border-r border-slate-700/50">Assigned Date & Time</th>
+                  <th class="p-3 border-r border-slate-700/50">Requester (You)</th>
+                  <th class="p-3 border-r border-slate-700/50">Assigned To</th>
+                  <th class="p-3 border-r border-slate-700/50">Task Details</th>
+                  <th class="p-3 border-r border-slate-700/50">Live Execution Status</th>
+                  <th class="p-3 border-r border-slate-700/50 text-center">Target Deadline</th>
+                  <th class="p-3 border-r border-slate-700/50 text-center">Precision Countdown / Closure Time</th>
+                  <th class="p-3 border-r border-slate-700/50">Uploaded Proof (Photo)</th>
+                  <th class="p-3 text-center">Comments Log</th>
+                </tr>
+              </thead>
+              <tbody id="delegatedTableBody" class="divide-y divide-slate-700/50"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 4: VISUAL CURVES & METRICS -->
+      <!-- ========================================================================= -->
+      <section id="view-curves" class="view-panel hidden space-y-6">
+        
+        <div class="card-box border rounded-2xl p-6 shadow-2xl">
+          <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div>
+              <h2 class="text-lg font-bold">Visual Curves & Execution Metrics</h2>
+              <p class="text-xs text-sub">Live velocity plotting, S-Curves, target trajectory vs actual execution, and on-time reliability.</p>
+            </div>
+            <button onclick="renderVisualCurves()" class="px-3 py-1.5 rounded-lg inner-box text-xs font-mono text-teal-400 border">
+              <i class="fa-solid fa-arrows-rotate mr-1"></i> Refresh Velocity Plot
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="inner-box p-4 rounded-xl border">
+              <span class="text-xs font-bold uppercase font-mono block mb-2">Cumulative Task Velocity Curve (Target vs Actual)</span>
+              <div class="h-60 w-full relative flex items-end">
+                <svg id="svgVelocityCurve" viewBox="0 0 500 200" class="w-full h-full overflow-visible"></svg>
+              </div>
+              <div class="flex justify-between text-[11px] text-sub mt-4 pt-2 border-t font-mono">
+                <span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-purple-500 rounded"></span> Target Trajectory Baseline</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-teal-400 rounded"></span> Actual Velocity Curve</span>
+              </div>
+            </div>
+
+            <div class="inner-box p-4 rounded-xl border flex flex-col justify-between">
+              <span class="text-xs font-bold uppercase font-mono block mb-2">Live Workload Distribution</span>
+              <div class="flex items-center justify-around h-60">
+                <div class="relative w-44 h-44">
+                  <svg viewBox="0 0 36 36" class="w-full h-full transform -rotate-90">
+                    <path class="text-slate-700/40" stroke-width="4" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path id="pieCompleted" class="text-emerald-500" stroke-dasharray="0, 100" stroke-width="4" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path id="pieOverdue" class="text-red-500" stroke-dasharray="0, 100" stroke-width="4" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path id="pieHold" class="text-amber-500" stroke-dasharray="0, 100" stroke-width="4" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  </svg>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <span id="visualKpiEfficiency" class="text-3xl font-black">0%</span>
+                    <span class="text-[9px] text-sub uppercase font-mono">Completion</span>
+                  </div>
+                </div>
+                <div class="space-y-2 text-xs font-mono">
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-emerald-500"></span> <span id="labelPieComp">Completed (0)</span></div>
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-red-500"></span> <span id="labelPieOver">Overdue / Out (0)</span></div>
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-amber-500"></span> <span id="labelPieHold">On Hold (0)</span></div>
+                  <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-sky-500"></span> <span id="labelPieProg">In Progress (0)</span></div>
+                </div>
+              </div>
+              <p class="text-[11px] text-sub text-center font-mono">Synchronized to system timestamps.</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 5: TASK MESSAGE BOX WITH SL.NO -->
+      <!-- ========================================================================= -->
+      <section id="view-messages" class="view-panel hidden space-y-4">
+        
+        <div class="card-box border rounded-2xl p-5 shadow-2xl">
+          <div class="flex items-center justify-between pb-4 border-b">
+            <div>
+              <h2 class="text-base font-bold">Task Assignment Activity & Messages</h2>
+              <p class="text-xs text-sub">Row-by-row dispatch notifications with Sl.No. Click any notification to navigate directly to the task.</p>
+            </div>
+            <span id="unreadMessagesHeaderBadge" class="text-xs font-mono bg-purple-950 text-purple-300 border border-purple-800 px-3 py-1 rounded-full">
+              0 Unread
+            </span>
+          </div>
+
+          <div id="messagesListContainer" class="divide-y divide-slate-700/50 mt-2">
+            <!-- Messages populated by JS -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 6: USAGE & ACTIVITY (Strictly Self-Time Only for Employees) -->
+      <!-- ========================================================================= -->
+      <section id="view-usage" class="view-panel hidden space-y-6">
+        
+        <div class="card-box border rounded-2xl p-6 shadow-2xl">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-lg font-bold">Usage & System Activity Logs</h2>
+              <p id="usageScopeSubtitle" class="text-xs text-sub">Personal active session metrics tracked on the platform.</p>
+            </div>
+            <span class="text-xs font-mono text-teal-400 bg-teal-950 border border-teal-800 px-3 py-1 rounded-lg">Real-Time Tracker</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left border-collapse">
+              <thead>
+                <tr class="inner-box text-sub uppercase font-mono border-b">
+                  <th class="p-3">User Name</th>
+                  <th class="p-3">Role</th>
+                  <th class="p-3">Current Status</th>
+                  <th class="p-3">Active Session Duration</th>
+                  <th class="p-3">Cumulative Platform Usage</th>
+                </tr>
+              </thead>
+              <tbody id="usageTableBody" class="divide-y divide-slate-700/50"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 7: IT & PASSWORD SECURITY PORTAL -->
+      <!-- ========================================================================= -->
+      <section id="view-itSecurity" class="view-panel hidden space-y-6">
+        
+        <div class="card-box border rounded-2xl p-6 shadow-2xl">
+          <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div>
+              <span class="text-[10px] font-mono uppercase text-teal-400 tracking-wider">Access Control Center</span>
+              <h2 class="text-xl font-black">IT User Administration & Password Reset Portal</h2>
+              <p class="text-xs text-sub">Authorized for IT Administrators & Executive Admin (Saravanan M).</p>
+            </div>
+            <button onclick="openUserModal()" class="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-bold transition shadow-lg">
+              <i class="fa-solid fa-user-plus mr-1.5"></i> Provision New ID
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-6">
+            <div class="inner-box p-4 rounded-xl border">
+              <span class="text-[10px] font-mono text-sub uppercase block mb-1">Resets Today</span>
+              <span id="resetTodayCount" class="text-2xl font-black text-teal-400">0</span>
+              <span class="text-[10px] text-sub block mt-1">Single Day Resets</span>
+            </div>
+            <div class="inner-box p-4 rounded-xl border">
+              <span class="text-[10px] font-mono text-sub uppercase block mb-1">Resets This Week</span>
+              <span id="resetWeekCount" class="text-2xl font-black text-sky-400">0</span>
+              <span class="text-[10px] text-sub block mt-1">Last 7 Calendar Days</span>
+            </div>
+            <div class="inner-box p-4 rounded-xl border">
+              <span class="text-[10px] font-mono text-sub uppercase block mb-1">Resets This Month</span>
+              <span id="resetMonthCount" class="text-2xl font-black text-purple-400">0</span>
+              <span class="text-[10px] text-sub block mt-1">Calendar Month To Date</span>
+            </div>
+            <div class="inner-box p-4 rounded-xl border">
+              <span class="text-[10px] font-mono text-sub uppercase block mb-1">Frequent Reset Alert</span>
+              <span id="frequentResetTarget" class="text-xs font-bold text-amber-400 block mt-2">None</span>
+              <span class="text-[10px] text-sub block mt-1">Audit flagged</span>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left border-collapse">
+              <thead>
+                <tr class="inner-box text-sub uppercase font-mono border-b">
+                  <th class="p-3">User ID</th>
+                  <th class="p-3">Full Name</th>
+                  <th class="p-3">Corporate Email</th>
+                  <th class="p-3">Assigned Role</th>
+                  <th class="p-3">Pending Reset Request</th>
+                  <th class="p-3">Password Security Action</th>
+                </tr>
+              </thead>
+              <tbody id="itUserTableBody" class="divide-y divide-slate-700/50"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: COMMENTS (Pending & In-Flight Tasks) -->
+  <!-- ========================================================================= -->
+  <div id="modalComments" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="card-box border rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
+      <div class="px-5 py-4 panel-box border-b flex justify-between items-center">
+        <h3 class="text-sm font-bold flex items-center gap-2">
+          <i class="fa-solid fa-comments text-teal-400"></i> Task Comments & Clarifications
+        </h3>
+        <button onclick="closeCommentsModal()" class="text-sub hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="p-5 space-y-4">
+        <div>
+          <span class="text-[11px] font-mono uppercase text-sub block">Task Title</span>
+          <p id="commentTaskTitle" class="text-sm font-bold text-white"></p>
+        </div>
+
+        <div id="commentHistoryList" class="inner-box p-3 rounded-xl border max-h-48 overflow-y-auto space-y-2 text-xs"></div>
+
+        <form onsubmit="handleSaveTaskComment(event)">
+          <label class="block text-[11px] font-mono uppercase text-sub mb-1">Add Comment / Dependency Note *</label>
+          <textarea id="taskCommentInput" required rows="3" placeholder="Enter status note, dependency details, or blocker question..." class="w-full inner-box border rounded-xl p-3 text-xs focus:outline-none focus:border-teal-500"></textarea>
+          <div class="pt-3 flex justify-end gap-2">
+            <button type="button" onclick="closeCommentsModal()" class="px-3.5 py-1.5 inner-box text-sub rounded-xl text-xs">Cancel</button>
+            <button type="submit" class="px-4 py-1.5 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-bold">Post Comment</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: ASSIGN TASK (Streamlined for All Users) -->
+  <!-- ========================================================================= -->
+  <div id="modalTask" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="card-box border rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl">
+      <div class="px-5 py-4 panel-box border-b flex justify-between items-center">
+        <h3 class="text-sm font-bold flex items-center gap-2">
+          <i class="fa-solid fa-clipboard-check text-purple-400"></i> Assign Operational Task
+        </h3>
+        <button onclick="closeTaskModal()" class="text-sub hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form onsubmit="handleCreateTask(event)" class="p-5 space-y-3.5">
+        <div>
+          <label class="block text-[11px] font-mono uppercase text-sub mb-1">Task Title *</label>
+          <input type="text" id="taskTitleInput" required placeholder="e.g. PLC Automation Logic Verification" class="w-full inner-box border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-purple-500" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-mono uppercase text-sub mb-1">Category *</label>
+            <select id="taskCategorySelect" class="w-full inner-box border rounded-xl px-3 py-2 text-xs">
+              <option>Operations</option>
+              <option>Recruitment</option>
+              <option>HR and Admin</option>
+              <option>Admin</option>
+              <option>Compliance</option>
+              <option>Project Management</option>
+              <option>IT and Infrastructure</option>
+              <option>Graphic Design</option>
+              <option>Software Development</option>
+              <option>Others</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-mono uppercase text-sub mb-1">Assigned To *</label>
+            <select id="taskAssignedSelect" class="w-full inner-box border rounded-xl px-3 py-2 text-xs"></select>
+          </div>
+        </div>
+
+        <!-- TARGET DEADLINE -->
+        <div>
+          <label class="block text-[11px] font-mono uppercase text-sub mb-1">
+            Target Deadline (Visual Calendar) *
+          </label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="relative">
+              <input 
+                type="date" 
+                id="taskTargetDate" 
+                required 
+                onclick="this.showPicker && this.showPicker()"
+                class="w-full inner-box border rounded-xl px-3 py-2.5 text-xs font-mono cursor-pointer focus:outline-none focus:border-purple-500" 
+              />
+              <button type="button" onclick="document.getElementById('taskTargetDate').showPicker()" class="absolute right-3 top-2.5 text-purple-400">
+                <i class="fa-regular fa-calendar-days"></i>
+              </button>
+            </div>
+            <div>
+              <input 
+                type="time" 
+                id="taskTargetTime" 
+                required 
+                class="w-full inner-box border rounded-xl px-3 py-2.5 text-xs font-mono focus:outline-none focus:border-purple-500" 
+              />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-mono uppercase text-sub mb-1">Task Description</label>
+          <textarea id="taskDescInput" rows="2" placeholder="Acceptance criteria and deliverables..." class="w-full inner-box border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-purple-500"></textarea>
+        </div>
+
+        <div class="pt-3 border-t flex justify-end gap-2">
+          <button type="button" onclick="closeTaskModal()" class="px-3.5 py-1.5 inner-box text-sub rounded-xl text-xs">Cancel</button>
+          <button type="submit" class="px-4 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold">Publish & Dispatch</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: MANDATORY PHOTO PROOF COMPLETION -->
+  <!-- ========================================================================= -->
+  <div id="modalProof" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="card-box border rounded-2xl w-full max-w-md p-6 shadow-2xl">
+      <div class="flex justify-between items-center pb-3 border-b">
+        <h4 class="text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+          <i class="fa-solid fa-camera text-teal-400"></i> Proof of Completion (Mandatory)
+        </h4>
+        <button onclick="closeProofModal()" class="text-sub hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="py-4 space-y-3">
+        <p class="text-xs text-sub">
+          Upload photo evidence to complete this task. Once completed and closed, <strong>it is permanently locked and cannot be changed</strong>.
+        </p>
+
+        <div class="border-2 border-dashed border-slate-700/60 hover:border-teal-500 rounded-xl p-5 text-center inner-box">
+          <input type="file" id="proofFileInput" accept="image/png, image/jpeg, image/webp" onchange="handleProofFileSelected(event)" class="hidden" />
+          <label for="proofFileInput" class="cursor-pointer block">
+            <i class="fa-solid fa-image text-3xl text-sub mb-2 block"></i>
+            <span class="text-xs font-bold block">Click to select photo attachment</span>
+            <span class="text-[10px] text-sub block mt-1">Direct images only (.PNG, .JPG)</span>
+          </label>
+        </div>
+
+        <div id="proofPreviewWrap" class="hidden text-center inner-box p-2 rounded-xl border">
+          <img id="proofPreviewImg" src="" alt="Proof Preview" class="max-h-36 mx-auto rounded object-contain mb-1" />
+          <span id="proofFileName" class="text-[11px] text-teal-400 font-mono block"></span>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t flex justify-end gap-2">
+        <button onclick="closeProofModal()" class="px-3.5 py-1.5 inner-box text-sub rounded-xl text-xs">Cancel</button>
+        <button id="btnSubmitProof" onclick="confirmTaskCompletionWithProof()" disabled class="px-4 py-1.5 bg-teal-600 disabled:opacity-40 hover:bg-teal-500 text-white rounded-xl text-xs font-bold shadow">
+          Verify & Permanently Lock
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: PROVISION USER -->
+  <!-- ========================================================================= -->
+  <div id="modalUser" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="card-box border rounded-2xl w-full max-w-sm p-5 shadow-2xl">
+      <div class="flex justify-between items-center pb-3 border-b">
+        <h4 class="text-xs font-bold uppercase tracking-wider">Provision Corporate User</h4>
+        <button onclick="closeUserModal()" class="text-sub hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form onsubmit="handleCreateUser(event)" class="py-4 space-y-3">
+        <div>
+          <label class="block text-[11px] font-mono uppercase text-sub mb-1">Full Name *</label>
+          <input type="text" id="newUserName" required placeholder="e.g. Anand R" class="w-full inner-box border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-teal-500" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-mono uppercase text-sub mb-1">Role *</label>
+          <select id="newUserRole" class="w-full inner-box border rounded-xl px-3 py-2 text-xs">
+            <option value="EMPLOYEE">Regular Employee</option>
+            <option value="ADMIN">System Administrator</option>
+            <option value="IT">IT Administrator (ID & Reset Specialist)</option>
+          </select>
+        </div>
+        <div class="pt-3 border-t flex justify-end gap-2">
+          <button type="button" onclick="closeUserModal()" class="px-3.5 py-1.5 inner-box text-sub rounded-xl text-xs">Cancel</button>
+          <button type="submit" class="px-4 py-1.5 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-bold">Register Globally</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT STATE ENGINE & LOCALSTORAGE RESILIENCE -->
+  <!-- ========================================================================= -->
+  <script>
+    const STORAGE_KEY_DB = 'VISTA_OPS_DB_V5';
+    const STORAGE_KEY_SESSION = 'VISTA_ACTIVE_USER_NAME_V5';
+
+    const INITIAL_ROSTER = [
+      { id: "USR-01", name: "Saravanan M", role: "ADMIN", email: "saravanan@vistaengg.com", usageSeconds: 14200, resetCount: 0, pendingReset: false },
+      { id: "USR-02", name: "IT Administrator", role: "IT", email: "it-support@vistaengg.com", usageSeconds: 8400, resetCount: 0, pendingReset: false },
+      { id: "USR-03", name: "Mohan", role: "EMPLOYEE", email: "mohan@vistaengg.com", usageSeconds: 11200, resetCount: 2, pendingReset: true },
+      { id: "USR-04", name: "Pradeepa", role: "EMPLOYEE", email: "pradeepa@vistaengg.com", usageSeconds: 9800, resetCount: 1, pendingReset: false },
+      { id: "USR-05", name: "Keerthivasan", role: "EMPLOYEE", email: "keerthivasan@vistaengg.com", usageSeconds: 7400, resetCount: 0, pendingReset: false },
+      { id: "USR-06", name: "Naveen Kumar", role: "EMPLOYEE", email: "naveen@vistaengg.com", usageSeconds: 6100, resetCount: 0, pendingReset: false },
+      { id: "USR-07", name: "Sakthi Nathan", role: "EMPLOYEE", email: "sakthi@vistaengg.com", usageSeconds: 5200, resetCount: 0, pendingReset: false },
+      { id: "USR-08", name: "Magesh kumar S", role: "EMPLOYEE", email: "magesh@vistaengg.com", usageSeconds: 4300, resetCount: 1, pendingReset: false }
+    ];
+
+    const INITIAL_TASKS = [
+      {
+        id: "tsk-01",
+        serial_no: 1,
+        cw: 40,
+        title: "PLC Automation Logic Verification",
+        category: "Operations",
+        requester: "Saravanan M",
+        assigned_to: "Mohan",
+        status: "COMPLETED",
+        assigned_at: "2026-09-29T10:00:00",
+        target_deadline: "2026-09-30T14:48:00",
+        actual_completed_at: "2026-09-30T15:15:00",
+        closure_note: "Closed: 9/30/2026, 03:15 PM",
+        proof_image: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='40'><rect width='100' height='40' fill='%2310b981'/><text x='10' y='25' fill='white' font-size='10'>PLC VERIFIED</text></svg>",
+        description: "Verify ladder logic on station 3.",
+        comments: [{ author: "Mohan", text: "Calibration done on switch 2.", time: "9/29/2026, 02:00 PM" }]
+      },
+      {
+        id: "tsk-02",
+        serial_no: 2,
+        cw: 40,
+        title: "BOM Extraction for Project Aero",
+        category: "Project Management",
+        requester: "Magesh kumar S",
+        assigned_to: "Keerthivasan",
+        status: "DEPENDENCY_ON_HOLD",
+        assigned_at: "2026-09-29T11:00:00",
+        target_deadline: "2026-10-02T18:00:00",
+        actual_completed_at: null,
+        closure_note: null,
+        proof_image: null,
+        description: "Waiting for external supplier quote validation.",
+        comments: [{ author: "Keerthivasan", text: "Waiting for vendor pricing catalog.", time: "9/29/2026, 03:30 PM" }]
+      },
+      {
+        id: "tsk-03",
+        serial_no: 3,
+        cw: 40,
+        title: "HVAC Duct Layout FEM Simulation",
+        category: "Software Development",
+        requester: "Pradeepa",
+        assigned_to: "Naveen Kumar",
+        status: "ON_PROGRESS",
+        assigned_at: "2026-09-28T09:30:00",
+        target_deadline: "2026-09-30T11:00:00",
+        actual_completed_at: null,
+        closure_note: null,
+        proof_image: null,
+        description: "Mesh convergence checks on ventilation system.",
+        comments: []
+      }
+    ];
+
+    const INITIAL_NOTIFICATIONS = [
+      {
+        id: "ntf-1",
+        taskId: "tsk-01",
+        sender: "Saravanan M",
+        recipient: "Mohan",
+        taskTitle: "PLC Automation Logic Verification",
+        time: "9/29/2026, 10:00 AM",
+        read: true
+      },
+      {
+        id: "ntf-2",
+        taskId: "tsk-03",
+        sender: "Pradeepa",
+        recipient: "Naveen Kumar",
+        taskTitle: "HVAC Duct Layout FEM Simulation",
+        time: "9/28/2026, 09:30 AM",
+        read: false
+      }
+    ];
+
+    // Load Database with Safe Parser
+    function loadPersistedState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_DB);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          return {
+            users: parsed.users || INITIAL_ROSTER,
+            tasks: parsed.tasks || INITIAL_TASKS,
+            notifications: parsed.notifications || INITIAL_NOTIFICATIONS,
+            resetAuditLog: parsed.resetAuditLog || []
+          };
+        }
+      } catch (e) {
+        console.warn("Storage hydration fallback invoked:", e);
+      }
+      return {
+        users: INITIAL_ROSTER,
+        tasks: INITIAL_TASKS,
+        notifications: INITIAL_NOTIFICATIONS,
+        resetAuditLog: [
+          { userName: "Mohan", timestamp: Date.now() - 3600000 * 2 },
+          { userName: "Pradeepa", timestamp: Date.now() - 86400000 * 3 }
+        ]
+      };
+    }
+
+    let appState = loadPersistedState();
+    let users = appState.users;
+    let tasks = appState.tasks;
+    let taskNotifications = appState.notifications;
+    let resetAuditLog = appState.resetAuditLog;
+    let currentSessionUser = null;
+    
+    let sessionSeconds = 0;
+    let activeFilter = 'ALL';
+    let pendingProofTaskId = null;
+    let tempProofUrl = null;
+    let activeCommentTaskId = null;
+
+    // 2. Lifecycle
+    window.addEventListener('DOMContentLoaded', () => {
+      populateLoginDropdown();
+      populateFormDropdowns();
+
+      // Reliable Session Recovery by Username
+      const savedUserName = localStorage.getItem(STORAGE_KEY_SESSION);
+      if (savedUserName) {
+        const matchedUser = users.find(u => u.name === savedUserName);
+        if (matchedUser) {
+          authenticateUser(matchedUser, false);
+        } else {
+          document.getElementById('loginScreen').classList.remove('hidden');
+        }
+      } else {
+        document.getElementById('loginScreen').classList.remove('hidden');
+      }
+
+      // Robot Walk Dialogue
+      const phrases1 = [
+        "Morning Unit 2! Ready for system telemetry?",
+        "Auditing task queues for Saravanan M...",
+        "Live velocity looking strong today!"
+      ];
+      const phrases2 = [
+        "All VISTA operational pipelines nominal @ 100%!",
+        "Zero packet drops detected in central register.",
+        "Photo proof verification algorithms active."
+      ];
+      let pIdx = 0;
+      setInterval(() => {
+        pIdx = (pIdx + 1) % phrases1.length;
+        const b1 = document.getElementById('speechBubble1');
+        const b2 = document.getElementById('speechBubble2');
+        if (b1) b1.textContent = phrases1[pIdx];
+        if (b2) b2.textContent = phrases2[pIdx];
+      }, 4000);
+
+      // Precision Clock & Session Counter (Every 1s)
+      setInterval(() => {
+        const now = new Date();
+        document.getElementById('liveSecClock').textContent = now.toLocaleTimeString();
+        if (currentSessionUser) {
+          sessionSeconds++;
+          const m = Math.floor(sessionSeconds / 60);
+          const s = sessionSeconds % 60;
+          const displayStr = `${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`;
+          document.getElementById('sessionDurationDisplay').textContent = displayStr;
+          document.getElementById('heroSessionTime').textContent = displayStr;
+        }
+        updateDynamicTimers();
+      }, 1000);
+    });
+
+    // Safe State Persistence (Quota Exceeded Proof)
+    function saveState() {
+      try {
+        const payload = {
+          users: users,
+          tasks: tasks,
+          notifications: taskNotifications,
+          resetAuditLog: resetAuditLog
+        };
+        localStorage.setItem(STORAGE_KEY_DB, JSON.stringify(payload));
+        if (currentSessionUser) {
+          localStorage.setItem(STORAGE_KEY_SESSION, currentSessionUser.name);
+        }
+      } catch (err) {
+        console.error("Storage save issue (mitigated):", err);
+      }
+      
+      renderDashboardMatrix();
+      renderWorkload();
+      renderDelegatedTasks();
+      renderMessagesList();
+      renderUsageTable();
+      renderVisualCurves();
+      renderITSecurityPortal();
+    }
+
+    // 3. Authentication & Role Permissions
+    function populateLoginDropdown() {
+      const select = document.getElementById('loginUserSelect');
+      select.innerHTML = users.map(u => `<option value="${u.name}">${u.name} (${u.role})</option>`).join('');
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const selectedName = document.getElementById('loginUserSelect').value;
+      const userObj = users.find(u => u.name === selectedName);
+      authenticateUser(userObj, true);
+    }
+
+    function authenticateUser(userObj, switchView = true) {
+      currentSessionUser = userObj;
+      sessionSeconds = 0;
+      localStorage.setItem(STORAGE_KEY_SESSION, currentSessionUser.name);
+
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('sidebarUserName').textContent = currentSessionUser.name;
+      document.getElementById('sidebarUserRole').textContent = currentSessionUser.role;
+      document.getElementById('userAvatarText').textContent = currentSessionUser.name.charAt(0);
+      document.getElementById('welcomeUserNameHero').textContent = currentSessionUser.name;
+
+      // RULE: IT Administrator CANNOT assign tasks!
+      const assignBtnWrap = document.getElementById('assignTaskBtnWrap');
+      if (currentSessionUser.role === 'IT') {
+        assignBtnWrap.classList.add('hidden');
+      } else {
+        assignBtnWrap.classList.remove('hidden');
+      }
+
+      // IT & Admin Security Tab
+      if (currentSessionUser.role === 'ADMIN' || currentSessionUser.role === 'IT' || currentSessionUser.name === 'Saravanan M') {
+        document.getElementById('itAdminNavGroup').classList.remove('hidden');
+      } else {
+        document.getElementById('itAdminNavGroup').classList.add('hidden');
+      }
+
+      const hour = new Date().getHours();
+      let greet = "Good Morning";
+      if (hour >= 12 && hour < 17) greet = "Good Afternoon";
+      else if (hour >= 17) greet = "Good Evening";
+      document.getElementById('welcomeGreeting').textContent = greet;
+      document.getElementById('robotSpeechBubble').textContent = `👋 Hi ${currentSessionUser.name}! All systems operational.`;
+
+      if (currentSessionUser.role === 'ADMIN') {
+        document.getElementById('navDashboardLabel').textContent = 'Operations Matrix (Master)';
+        document.getElementById('dashboardBannerTitle').textContent = 'OPERATIONS DASHBOARD';
+        document.getElementById('matrixHeaderTitle').textContent = 'Company-Wide Performance Matrix';
+      } else {
+        document.getElementById('navDashboardLabel').textContent = 'My Personal Dashboard';
+        document.getElementById('dashboardBannerTitle').textContent = `${currentSessionUser.name}'s DASHBOARD`;
+        document.getElementById('matrixHeaderTitle').textContent = 'Personal Performance Matrix';
+      }
+
+      if (switchView) navigateTo('welcome');
+      saveState();
+    }
+
+    function logoutSession() {
+      currentSessionUser = null;
+      localStorage.removeItem(STORAGE_KEY_SESSION);
+      document.getElementById('loginScreen').classList.remove('hidden');
+    }
+
+    function triggerForgotPasswordFromLogin() {
+      const selectedName = document.getElementById('loginUserSelect').value;
+      if (confirm(`Send formal password reset request for ${selectedName} to IT Administrator and Saravanan M?`)) {
+        const u = users.find(x => x.name === selectedName);
+        if (u) {
+          u.pendingReset = true;
+          u.resetCount = (u.resetCount || 0) + 1;
+        }
+        resetAuditLog.unshift({ userName: selectedName, timestamp: Date.now() });
+        saveState();
+        alert(`Password reset request for ${selectedName} has been transmitted to IT & Administration!`);
+      }
+    }
+
+    // 4. View Routing
+    function navigateTo(viewId) {
+      document.querySelectorAll('.view-panel').forEach(v => v.classList.add('hidden'));
+      document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('bg-purple-950/60', 'text-white', 'border', 'border-purple-800'));
+
+      const target = document.getElementById(`view-${viewId}`);
+      if (target) target.classList.remove('hidden');
+
+      const navBtn = document.getElementById(`nav-${viewId}`);
+      if (navBtn) navBtn.classList.add('bg-purple-950/60', 'text-white', 'border', 'border-purple-800');
+
+      const labels = {
+        welcome: 'Welcome Portal',
+        dashboard: 'Operations Matrix',
+        workload: 'Workload Execution Register',
+        delegated: 'Delegated Tasks Tracker',
+        curves: 'Visual Curves & Metrics',
+        usage: 'Usage & Platform Activity',
+        messages: 'Task Message Box',
+        itSecurity: 'IT & Password Security Portal'
+      };
+      document.getElementById('currentViewBreadcrumb').textContent = labels[viewId] || 'Workspace';
+
+      if (viewId === 'curves') renderVisualCurves();
+      if (viewId === 'usage') renderUsageTable();
+      if (viewId === 'itSecurity') renderITSecurityPortal();
+      if (viewId === 'delegated') renderDelegatedTasks();
+    }
+
+    // 5. Interactive Talking Robot
+    const ROBOT_PHRASES = [
+      "I'm keeping track of all operational deadlines!",
+      "Tip: Remember to upload photo proof to close your tasks.",
+      "VISTA Innovation @ work — Everything is running smoothly.",
+      "Great job staying on top of your deliverables today!",
+      "All background telemetry is verified."
+    ];
+    let phraseIndex = 0;
+
+    function triggerRobotSpeech() {
+      const bubble = document.getElementById('robotSpeechBubble');
+      const eyes = document.getElementById('robotEyes');
+      eyes.setAttribute('fill', '#f59e0b');
+      setTimeout(() => eyes.setAttribute('fill', '#2dd4bf'), 400);
+
+      phraseIndex = (phraseIndex + 1) % ROBOT_PHRASES.length;
+      bubble.textContent = `🤖 ${ROBOT_PHRASES[phraseIndex]}`;
+      bubble.classList.add('scale-105');
+      setTimeout(() => bubble.classList.remove('scale-105'), 300);
+    }
+
+    // 6. Operations Dashboard Rendering
+    function renderDashboardMatrix() {
+      const tbody = document.getElementById('matrixTableBody');
+      const tfoot = document.getElementById('matrixTableFoot');
+      if (!tbody || !currentSessionUser) return;
+
+      tbody.innerHTML = '';
+      let tot = 0, comp = 0, prog = 0, pend = 0, hold = 0, late = 0, over = 0;
+
+      // PRIVACY RULE: Regular Employees only see themselves; Admin sees everyone
+      const rosterToDisplay = currentSessionUser.role === 'ADMIN'
+        ? users.filter(u => u.role === 'EMPLOYEE' || u.name === 'Mohan' || u.name === 'Pradeepa')
+        : users.filter(u => u.name.toLowerCase() === currentSessionUser.name.toLowerCase());
+
+      rosterToDisplay.forEach((u, i) => {
+        const uTasks = tasks.filter(t => t.assigned_to.toLowerCase() === u.name.toLowerCase());
+        const uTotal = uTasks.length;
+
+        let uComp = 0, uProg = 0, uPend = 0, uHold = 0, uLate = 0, uOver = 0;
+
+        uTasks.forEach(t => {
+          const evalRes = evaluateTaskTiming(t);
+          if (t.status === 'COMPLETED') {
+            uComp++;
+            if (evalRes.isLate) uLate++;
+          } else if (t.status === 'DEPENDENCY_ON_HOLD') {
+            uHold++;
+          } else if (evalRes.isOverdue) {
+            uOver++;
+          } else if (t.status === 'ON_PROGRESS') {
+            uProg++;
+          } else {
+            uPend++;
+          }
+        });
+
+        const finalTotal = uComp + uProg + uPend + uHold + uLate;
+        const rating = uTotal > 0 ? Math.round((uComp / uTotal) * 100) : 100;
+
+        tot += uTotal; comp += uComp; prog += uProg; pend += uPend; hold += uHold; late += uLate; over += uOver;
+
+        const ratingClass = rating >= 80 ? 'bg-emerald-600 text-white font-bold' : 'bg-red-600 text-white font-bold';
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-purple-950/20 transition">
+            <td class="py-2 border border-slate-700/50 font-mono">${i + 1}</td>
+            <td class="py-2 px-3 border border-slate-700/50 text-left font-semibold">${u.name}</td>
+            <td class="py-2 border border-slate-700/50 font-bold">${uTotal}</td>
+            <td class="py-2 border border-slate-700/50 text-emerald-400 font-bold">${uComp}</td>
+            <td class="py-2 border border-slate-700/50">${uProg}</td>
+            <td class="py-2 border border-slate-700/50">${uPend}</td>
+            <td class="py-2 border border-slate-700/50 text-amber-400">${uHold}</td>
+            <td class="py-2 border border-slate-700/50 text-amber-400">${uLate}</td>
+            <td class="py-2 border border-slate-700/50 text-red-400 font-bold">${uOver}</td>
+            <td class="py-2 border border-slate-700/50 font-bold">${finalTotal}</td>
+            <td class="py-2 px-3 border border-slate-700/50 ${ratingClass}">${rating}%</td>
+          </tr>
+        `;
+      });
+
+      // Update Cards
+      document.getElementById('mTotal').textContent = tot;
+      document.getElementById('mCompleted').textContent = comp;
+      document.getElementById('mProgress').textContent = prog;
+      document.getElementById('mPending').textContent = pend;
+      document.getElementById('mHold').textContent = hold;
+      document.getElementById('mOverdue').textContent = over;
+
+      document.getElementById('heroTaskCount').textContent = `${tot} Tasks Active`;
+      const overallRating = tot > 0 ? Math.round((comp / tot) * 100) : 100;
+      document.getElementById('heroEfficiencyRate').textContent = `${overallRating}%`;
+
+      tfoot.innerHTML = `
+        <tr>
+          <td colspan="2" class="py-2.5 px-3 border border-slate-700/50 text-right uppercase font-mono">Total</td>
+          <td class="py-2 border border-slate-700/50">${tot}</td>
+          <td class="py-2 border border-slate-700/50">${comp}</td>
+          <td class="py-2 border border-slate-700/50">${prog}</td>
+          <td class="py-2 border border-slate-700/50">${pend}</td>
+          <td class="py-2 border border-slate-700/50">${hold}</td>
+          <td class="py-2 border border-slate-700/50">${late}</td>
+          <td class="py-2 border border-slate-700/50">${over}</td>
+          <td class="py-2 border border-slate-700/50">${comp + prog + pend + hold + late}</td>
+          <td class="py-2 border border-slate-700/50 ${overallRating >= 80 ? 'bg-emerald-600' : 'bg-red-600'} text-white font-black">${overallRating}%</td>
+        </tr>
+      `;
+    }
+
+    function filterWorkloadFromCard(metric) {
+      activeFilter = metric;
+      document.getElementById('activeFilterBadge').textContent = `Filtered: ${metric}`;
+      navigateTo('workload');
+      renderWorkload();
+    }
+
+    function clearWorkloadFilters() {
+      activeFilter = 'ALL';
+      document.getElementById('activeFilterBadge').textContent = 'My Execution Tasks';
+      renderWorkload();
+    }
+
+    // 7. Workload Register Rendering (Assigned Date + Time Included)
+    function renderWorkload() {
+      const tbody = document.getElementById('workloadTableBody');
+      if (!tbody || !currentSessionUser) return;
+
+      tbody.innerHTML = '';
+      let filtered = tasks;
+
+      // PRIVACY RULE: Workload Register only shows tasks assigned TO that person
+      if (currentSessionUser.role !== 'ADMIN') {
+        filtered = filtered.filter(t => t.assigned_to.toLowerCase() === currentSessionUser.name.toLowerCase());
+      }
+
+      if (activeFilter === 'COMPLETED') filtered = filtered.filter(t => t.status === 'COMPLETED');
+      else if (activeFilter === 'ON_PROGRESS') filtered = filtered.filter(t => t.status === 'ON_PROGRESS');
+      else if (activeFilter === 'PENDING') filtered = filtered.filter(t => t.status === 'PENDING');
+      else if (activeFilter === 'HOLD') filtered = filtered.filter(t => t.status === 'DEPENDENCY_ON_HOLD');
+      else if (activeFilter === 'OVERDUE') filtered = filtered.filter(t => evaluateTaskTiming(t).isOverdue);
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="12" class="p-8 text-center text-sub">No tasks currently assigned to your execution queue.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach((task, idx) => {
+        const evalRes = evaluateTaskTiming(task);
+        const isLocked = task.status === 'COMPLETED';
+
+        let closureCountdownContent = '';
+        if (isLocked) {
+          const closureTimeStr = task.actual_completed_at ? new Date(task.actual_completed_at).toLocaleString([], { dateStyle:'short', timeStyle:'short' }) : 'Closed';
+          closureCountdownContent = `
+            <div class="leading-tight">
+              <span class="text-xs font-bold text-emerald-400 block"><i class="fa-solid fa-lock text-[10px]"></i> Closed: ${closureTimeStr}</span>
+              <span class="text-[10px] ${evalRes.isLate ? 'text-amber-400' : 'text-emerald-500'} font-semibold font-mono">
+                ${evalRes.isLate ? 'Closed After Deadline' : 'Delivered On Time'}
+              </span>
+            </div>
+          `;
+        } else if (task.status === 'DEPENDENCY_ON_HOLD') {
+          closureCountdownContent = `<span class="text-xs font-bold text-amber-400 font-mono">Timer Frozen (On Hold)</span>`;
+        } else {
+          closureCountdownContent = `
+            <span id="countdown-${task.id}" class="text-xs font-mono font-bold ${evalRes.isOverdue ? 'text-red-400' : 'text-teal-400'}">
+              ${evalRes.countdownText}
+            </span>
+          `;
+        }
+
+        // FORMATTED ASSIGNED DATE + TIME
+        const assignedDateTimeStr = new Date(task.assigned_at).toLocaleString([], { dateStyle: 'numeric', timeStyle: 'short' });
+
+        // VIEW PROOF PERMISSION (Individual, Requester, or Saravanan M)
+        const canViewProof = currentSessionUser.role === 'ADMIN' || 
+                             task.assigned_to.toLowerCase() === currentSessionUser.name.toLowerCase() || 
+                             task.requester.toLowerCase() === currentSessionUser.name.toLowerCase();
+
+        tbody.innerHTML += `
+          <tr id="task-row-${task.id}" class="transition ${evalRes.rowClass}">
+            <td class="p-3 text-center font-mono font-bold text-sub border-r border-slate-700/50">${idx + 1}</td>
+            <td class="p-3 text-center font-mono text-purple-400 border-r border-slate-700/50">W${task.cw || '40'}</td>
+            
+            <!-- ASSIGNED DATE + TIME -->
+            <td class="p-3 whitespace-nowrap text-sub font-mono border-r border-slate-700/50">${assignedDateTimeStr}</td>
+            
+            <td class="p-3 text-sub border-r border-slate-700/50">${task.requester}</td>
+            <td class="p-3 font-semibold text-purple-400 border-r border-slate-700/50">${task.assigned_to}</td>
+            <td class="p-3 border-r border-slate-700/50">
+              <span class="font-bold block">${task.title}</span>
+              <span class="text-[10px] text-teal-400 font-mono">${task.category}</span>
+            </td>
+            
+            <!-- STATUS COLUMN -->
+            <td class="p-3 border-r border-slate-700/50">
+              ${isLocked 
+                ? `<span class="px-2 py-1 bg-emerald-950 text-emerald-300 border border-emerald-800 rounded font-bold text-[11px] inline-flex items-center gap-1.5">
+                     <i class="fa-solid fa-lock text-[10px]"></i> Completed
+                   </span>`
+                : `<select onchange="handleTaskStatusChange('${task.id}', this.value)" class="inner-box border rounded px-2 py-1 text-[11px] font-semibold focus:outline-none">
+                     <option value="PENDING" ${task.status === 'PENDING' ? 'selected' : ''}>Pending</option>
+                     <option value="ON_PROGRESS" ${task.status === 'ON_PROGRESS' ? 'selected' : ''}>On Progress</option>
+                     <option value="DEPENDENCY_ON_HOLD" ${task.status === 'DEPENDENCY_ON_HOLD' ? 'selected' : ''}>Dependency / On Hold</option>
+                     <option value="COMPLETED">Completed (Requires Proof)</option>
+                   </select>`
+              }
+            </td>
+
+            <td class="p-3 text-center whitespace-nowrap text-sub font-mono border-r border-slate-700/50">
+              ${new Date(task.target_deadline).toLocaleString([], { dateStyle:'short', timeStyle:'short' })}
+            </td>
+
+            <td class="p-3 text-center whitespace-nowrap border-r border-slate-700/50">
+              ${closureCountdownContent}
+            </td>
+
+            <!-- PROOF COLUMN -->
+            <td class="p-3 border-r border-slate-700/50">
+              ${task.proof_image 
+                ? (canViewProof 
+                    ? `<button onclick="viewAttachedProof('${task.proof_image}')" class="text-emerald-400 font-semibold text-[11px] hover:underline flex items-center gap-1">
+                         <i class="fa-solid fa-circle-check"></i> View Photo Proof
+                       </button>`
+                    : `<span class="text-sub italic text-[11px]"><i class="fa-solid fa-shield"></i> Proof Attached</span>`
+                  )
+                : `<span class="text-sub italic text-[11px]">No Photo Attached</span>`
+              }
+            </td>
+
+            <!-- COMMENTS COLUMN -->
+            <td class="p-3 text-center border-r border-slate-700/50">
+              <button onclick="openCommentsModal('${task.id}')" class="px-2.5 py-1 inner-box border hover:border-teal-400 text-teal-400 rounded text-[11px] font-mono flex items-center gap-1 mx-auto">
+                <i class="fa-solid fa-comment-dots"></i>
+                <span>${(task.comments && task.comments.length) || 0} Notes</span>
+              </button>
+            </td>
+
+            <td class="p-3 text-center whitespace-nowrap">
+              ${isLocked 
+                ? `<span class="text-emerald-400 font-bold text-[11px] flex items-center justify-center gap-1">
+                     <i class="fa-solid fa-lock"></i> Locked
+                   </span>`
+                : `<button onclick="initiateProofModal('${task.id}')" class="px-2.5 py-1 bg-teal-600 hover:bg-teal-500 text-white rounded text-[11px] font-bold">
+                     <i class="fa-solid fa-camera mr-1"></i> Complete
+                   </button>`
+              }
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    // 7B. Render Delegated Tasks Tracker
+    function renderDelegatedTasks() {
+      const tbody = document.getElementById('delegatedTableBody');
+      if (!tbody || !currentSessionUser) return;
+
+      tbody.innerHTML = '';
+
+      const myDelegated = tasks.filter(t => 
+        currentSessionUser.role === 'ADMIN' || t.requester.toLowerCase() === currentSessionUser.name.toLowerCase()
+      );
+
+      if (myDelegated.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-sub">You have not assigned any tasks to other team members yet.</td></tr>`;
+        return;
+      }
+
+      myDelegated.forEach((task, idx) => {
+        const evalRes = evaluateTaskTiming(task);
+        const assignedDateTimeStr = new Date(task.assigned_at).toLocaleString([], { dateStyle: 'numeric', timeStyle: 'short' });
+
+        tbody.innerHTML += `
+          <tr class="transition ${evalRes.rowClass}">
+            <td class="p-3 text-center font-mono font-bold text-sub border-r border-slate-700/50">${idx + 1}</td>
+            <td class="p-3 whitespace-nowrap text-sub font-mono border-r border-slate-700/50">${assignedDateTimeStr}</td>
+            <td class="p-3 font-semibold text-slate-300 border-r border-slate-700/50">${task.requester}</td>
+            <td class="p-3 font-bold text-sky-400 border-r border-slate-700/50">${task.assigned_to}</td>
+            <td class="p-3 border-r border-slate-700/50">
+              <span class="font-bold block">${task.title}</span>
+              <span class="text-[10px] text-teal-400 font-mono">${task.category}</span>
+            </td>
+            <td class="p-3 border-r border-slate-700/50 font-bold">
+              <span class="px-2 py-0.5 rounded text-[10px] ${task.status === 'COMPLETED' ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-slate-800 text-slate-300'}">
+                ${task.status}
+              </span>
+            </td>
+            <td class="p-3 text-center whitespace-nowrap text-sub font-mono border-r border-slate-700/50">
+              ${new Date(task.target_deadline).toLocaleString([], { dateStyle:'short', timeStyle:'short' })}
+            </td>
+            <td class="p-3 text-center whitespace-nowrap border-r border-slate-700/50 font-mono font-bold ${evalRes.isOverdue ? 'text-red-400' : 'text-teal-400'}">
+              ${task.status === 'COMPLETED' ? (task.closure_note || 'Closed') : evalRes.countdownText}
+            </td>
+            <td class="p-3 border-r border-slate-700/50">
+              ${task.proof_image 
+                ? `<button onclick="viewAttachedProof('${task.proof_image}')" class="text-emerald-400 font-semibold text-[11px] hover:underline flex items-center gap-1">
+                     <i class="fa-solid fa-circle-check"></i> View Proof
+                   </button>`
+                : `<span class="text-sub italic text-[11px]">Awaiting Proof</span>`
+              }
+            </td>
+            <td class="p-3 text-center">
+              <button onclick="openCommentsModal('${task.id}')" class="px-2.5 py-1 inner-box border hover:border-teal-400 text-teal-400 rounded text-[11px] font-mono flex items-center gap-1 mx-auto">
+                <i class="fa-solid fa-comment-dots"></i>
+                <span>${(task.comments && task.comments.length) || 0} Notes</span>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    // 8. Comments Engine
+    function openCommentsModal(taskId) {
+      activeCommentTaskId = taskId;
+      const t = tasks.find(x => x.id === taskId);
+      if (!t) return;
+
+      document.getElementById('commentTaskTitle').textContent = t.title;
+      const historyEl = document.getElementById('commentHistoryList');
+      
+      if (!t.comments || t.comments.length === 0) {
+        historyEl.innerHTML = `<span class="text-sub italic block p-2">No comments entered yet. Add the first update below!</span>`;
+      } else {
+        historyEl.innerHTML = t.comments.map(c => `
+          <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-bold text-teal-400">${c.author}</span>
+              <span class="text-[10px] text-sub font-mono">${c.time}</span>
+            </div>
+            <p class="text-slate-300 leading-relaxed">${c.text}</p>
+          </div>
+        `).join('');
+      }
+
+      document.getElementById('taskCommentInput').value = '';
+      document.getElementById('modalComments').classList.remove('hidden');
+    }
+
+    function closeCommentsModal() {
+      document.getElementById('modalComments').classList.add('hidden');
+      activeCommentTaskId = null;
+    }
+
+    function handleSaveTaskComment(e) {
+      e.preventDefault();
+      if (!activeCommentTaskId) return;
+
+      const text = document.getElementById('taskCommentInput').value.trim();
+      if (!text) return;
+
+      const t = tasks.find(x => x.id === activeCommentTaskId);
+      if (t) {
+        if (!t.comments) t.comments = [];
+        t.comments.unshift({
+          author: currentSessionUser.name,
+          text: text,
+          time: new Date().toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })
+        });
+        saveState();
+        openCommentsModal(activeCommentTaskId);
+      }
+    }
+
+    // 9. Exact Timing Engine
+    function evaluateTaskTiming(task) {
+      const now = Date.now();
+      const deadline = new Date(task.target_deadline).getTime();
+
+      if (task.status === 'DEPENDENCY_ON_HOLD') {
+        return { rowClass: 'row-hold', isOverdue: false, isLate: false, countdownText: 'Frozen' };
+      }
+
+      if (task.status === 'COMPLETED' && task.actual_completed_at) {
+        const completedAt = new Date(task.actual_completed_at).getTime();
+        const wasLate = completedAt > deadline;
+        return {
+          rowClass: wasLate ? 'row-yellow' : 'row-green',
+          isOverdue: false,
+          isLate: wasLate,
+          countdownText: wasLate ? 'Closed Late' : 'Closed On Time'
+        };
+      }
+
+      const diffSec = Math.floor((deadline - now) / 1000);
+      if (diffSec <= 0) {
+        return {
+          rowClass: 'row-red',
+          isOverdue: true,
+          isLate: true,
+          countdownText: `-${formatDuration(Math.abs(diffSec))}`
+        };
+      }
+
+      return {
+        rowClass: 'row-neutral',
+        isOverdue: false,
+        isLate: false,
+        countdownText: formatDuration(diffSec)
+      };
+    }
+
+    function formatDuration(sec) {
+      const d = Math.floor(sec / 86400);
+      const h = Math.floor((sec % 86400) / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      const s = sec % 60;
+      if (d > 0) return `${d}d ${h}h ${m}m ${s}s`;
+      return `${h.toString().padStart(2,'0')}h ${m.toString().padStart(2,'0')}m ${s.toString().padStart(2,'0')}s`;
+    }
+
+    function updateDynamicTimers() {
+      tasks.forEach(t => {
+        if (t.status !== 'COMPLETED' && t.status !== 'DEPENDENCY_ON_HOLD') {
+          const el = document.getElementById(`countdown-${t.id}`);
+          if (el) {
+            const ev = evaluateTaskTiming(t);
+            el.textContent = ev.countdownText;
+            el.className = `text-xs font-mono font-bold ${ev.isOverdue ? 'text-red-400' : 'text-teal-400'}`;
+          }
+        }
+      });
+    }
+
+    // 10. Proof Upload with Canvas Auto-Compression (Eliminating Quota Errors)
+    function initiateProofModal(taskId) {
+      pendingProofTaskId = taskId;
+      tempProofUrl = null;
+      document.getElementById('proofFileInput').value = '';
+      document.getElementById('proofPreviewWrap').classList.add('hidden');
+      document.getElementById('btnSubmitProof').disabled = true;
+      document.getElementById('modalProof').classList.remove('hidden');
+    }
+
+    function closeProofModal() {
+      document.getElementById('modalProof').classList.add('hidden');
+      pendingProofTaskId = null;
+    }
+
+    function handleProofFileSelected(e) {
+      const file = e.target.files[0];
+      if (!file || !file.type.startsWith('image/')) {
+        alert("Strict Rule: Only photographic evidence (.png, .jpg) is accepted.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          // Compress on Canvas to guarantee storage quota stays < 50KB
+          const canvas = document.createElement('canvas');
+          const maxDim = 500;
+          let w = img.width;
+          let h = img.height;
+          if (w > h && w > maxDim) {
+            h = Math.round((h * maxDim) / w);
+            w = maxDim;
+          } else if (h > maxDim) {
+            w = Math.round((w * maxDim) / h);
+            h = maxDim;
+          }
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          tempProofUrl = canvas.toDataURL('image/jpeg', 0.65);
+
+          document.getElementById('proofPreviewImg').src = tempProofUrl;
+          document.getElementById('proofFileName').textContent = file.name;
+          document.getElementById('proofPreviewWrap').classList.remove('hidden');
+          document.getElementById('btnSubmitProof').disabled = false;
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function confirmTaskCompletionWithProof() {
+      if (!pendingProofTaskId || !tempProofUrl) return;
+      const t = tasks.find(item => item.id === pendingProofTaskId);
+      if (t) {
+        t.proof_image = tempProofUrl;
+        t.status = 'COMPLETED';
+        t.actual_completed_at = new Date().toISOString();
+        t.closure_note = `Closed: ${new Date().toLocaleString()}`;
+        saveState();
+        closeProofModal();
+        alert('Photo verified! Task is now COMPLETED and permanently locked.');
+      }
+    }
+
+    function handleTaskStatusChange(taskId, newStatus) {
+      const t = tasks.find(item => item.id === taskId);
+      if (!t) return;
+
+      if (newStatus === 'COMPLETED') {
+        alert('Task completion strictly requires photographic proof. Please click "Complete" to attach evidence.');
+        renderWorkload();
+        return;
+      }
+
+      t.status = newStatus;
+      saveState();
+    }
+
+    function viewAttachedProof(dataUrl) {
+      const w = window.open("");
+      w.document.write(`<img src="${dataUrl}" style="max-width:100%; height:auto;" alt="Proof" />`);
+    }
+
+    // 11. Task Creation (Guaranteed Execution for Self & Others)
+    function openTaskModal() {
+      populateFormDropdowns();
+      
+      const now = new Date();
+      now.setDate(now.getDate() + 1);
+      const dateStr = now.toISOString().split('T')[0];
+      
+      document.getElementById('taskTargetDate').value = dateStr;
+      document.getElementById('taskTargetTime').value = "18:00";
+
+      document.getElementById('modalTask').classList.remove('hidden');
+    }
+
+    function closeTaskModal() {
+      document.getElementById('modalTask').classList.add('hidden');
+    }
+
+    function populateFormDropdowns() {
+      const ass = document.getElementById('taskAssignedSelect');
+      if (ass && currentSessionUser) {
+        // Include self as top choice and everyone else
+        ass.innerHTML = users.map(u => 
+          `<option value="${u.name}" ${u.name === currentSessionUser.name ? 'selected' : ''}>
+            ${u.name} ${u.name === currentSessionUser.name ? '(Myself)' : ''}
+          </option>`
+        ).join('');
+      }
+    }
+
+    function handleCreateTask(e) {
+      e.preventDefault();
+      const title = document.getElementById('taskTitleInput').value.trim();
+      const category = document.getElementById('taskCategorySelect').value;
+      const assignedTo = document.getElementById('taskAssignedSelect').value;
+      const targetDate = document.getElementById('taskTargetDate').value;
+      const targetTime = document.getElementById('taskTargetTime').value;
+      const desc = document.getElementById('taskDescInput').value;
+
+      if (!targetDate || !targetTime) {
+        alert("Please specify target date and time.");
+        return;
+      }
+
+      const combinedDeadline = new Date(`${targetDate}T${targetTime}:00`).toISOString();
+      const newTaskId = 'tsk-' + Date.now();
+      const creatorName = currentSessionUser ? currentSessionUser.name : "Saravanan M";
+
+      // Reset filter so newly added task is immediately visible
+      activeFilter = 'ALL';
+      document.getElementById('activeFilterBadge').textContent = 'My Execution Tasks';
+
+      tasks.unshift({
+        id: newTaskId,
+        serial_no: tasks.length + 1,
+        cw: 40,
+        title,
+        category,
+        requester: creatorName,
+        assigned_to: assignedTo,
+        status: "PENDING",
+        assigned_at: new Date().toISOString(),
+        target_deadline: combinedDeadline,
+        actual_completed_at: null,
+        closure_note: null,
+        proof_image: null,
+        description: desc,
+        comments: []
+      });
+
+      taskNotifications.unshift({
+        id: 'ntf-' + Date.now(),
+        taskId: newTaskId,
+        sender: creatorName,
+        recipient: assignedTo,
+        taskTitle: title,
+        time: new Date().toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }),
+        read: false
+      });
+
+      saveState();
+      closeTaskModal();
+      document.getElementById('taskTitleInput').value = '';
+      document.getElementById('taskDescInput').value = '';
+      
+      if (assignedTo.toLowerCase() === creatorName.toLowerCase()) {
+        navigateTo('workload');
+      } else {
+        navigateTo('delegated');
+      }
+      alert(`Task successfully created and published for ${assignedTo}!`);
+    }
+
+    // 12. Task Message Box with Sl.No
+    function renderMessagesList() {
+      const container = document.getElementById('messagesListContainer');
+      const badge = document.getElementById('unreadMessagesHeaderBadge');
+      const pill = document.getElementById('unreadNotifCountPill');
+      if (!container || !currentSessionUser) return;
+
+      container.innerHTML = '';
+
+      const relevantNotifs = currentSessionUser.role === 'ADMIN'
+        ? taskNotifications
+        : taskNotifications.filter(n => n.recipient.toLowerCase() === currentSessionUser.name.toLowerCase() || n.sender.toLowerCase() === currentSessionUser.name.toLowerCase());
+
+      const unreadCount = relevantNotifs.filter(n => !n.read && n.recipient.toLowerCase() === currentSessionUser.name.toLowerCase()).length;
+      
+      badge.textContent = `${unreadCount} Unread`;
+      if (unreadCount > 0) {
+        pill.textContent = unreadCount;
+        pill.classList.remove('hidden');
+      } else {
+        pill.classList.add('hidden');
+      }
+
+      if (relevantNotifs.length === 0) {
+        container.innerHTML = `<div class="p-8 text-center text-xs text-sub">No task assignment notifications logged.</div>`;
+        return;
+      }
+
+      relevantNotifs.forEach((item, idx) => {
+        const isUnreadForMe = !item.read && item.recipient.toLowerCase() === currentSessionUser.name.toLowerCase();
+
+        container.innerHTML += `
+          <div onclick="jumpToTaskFromNotification('${item.id}', '${item.taskId}')" 
+               class="p-4 cursor-pointer transition flex items-center justify-between gap-4 hover:bg-purple-950/20 ${isUnreadForMe ? 'bg-purple-950/30 border-l-4 border-l-purple-500' : 'opacity-70'}">
+            
+            <div class="flex items-center gap-3">
+              <span class="w-7 h-7 rounded-lg inner-box border flex items-center justify-center font-mono font-bold text-xs text-purple-400">
+                #${idx + 1}
+              </span>
+
+              <div class="w-8 h-8 rounded-lg ${isUnreadForMe ? 'bg-purple-600 text-white' : 'inner-box text-sub'} flex items-center justify-center font-bold text-xs">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i>
+              </div>
+
+              <div>
+                <p class="text-xs font-bold">
+                  Task <span class="text-teal-400">"${item.taskTitle}"</span> assigned by <strong class="text-purple-400">${item.sender}</strong> to <strong class="text-sky-400">${item.recipient}</strong>
+                </p>
+                <p class="text-[10px] text-sub mt-0.5 font-mono">Dispatched at ${item.time} • Click to open and clear notification</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              ${isUnreadForMe 
+                ? `<span class="text-[10px] font-bold text-amber-400 bg-amber-950/60 border border-amber-800 px-2 py-0.5 rounded">Unread</span>`
+                : `<span class="text-[10px] text-sub font-mono">Acknowledged</span>`
+              }
+              <i class="fa-solid fa-chevron-right text-sub text-xs"></i>
+            </div>
+
+          </div>
+        `;
+      });
+    }
+
+    function jumpToTaskFromNotification(notifId, taskId) {
+      const n = taskNotifications.find(item => item.id === notifId);
+      if (n) {
+        n.read = true;
+      }
+      saveState();
+
+      const t = tasks.find(x => x.id === taskId);
+      if (t && t.assigned_to.toLowerCase() === currentSessionUser.name.toLowerCase()) {
+        navigateTo('workload');
+      } else {
+        navigateTo('delegated');
+      }
+
+      setTimeout(() => {
+        const row = document.getElementById(`task-row-${taskId}`);
+        if (row) {
+          row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          row.classList.add('ring-2', 'ring-purple-400');
+          setTimeout(() => row.classList.remove('ring-2', 'ring-purple-400'), 2500);
+        }
+      }, 150);
+    }
+
+    // 13. Visual Curves Plotting
+    function renderVisualCurves() {
+      const svg = document.getElementById('svgVelocityCurve');
+      if (!svg || !currentSessionUser) return;
+
+      const userScopedTasks = currentSessionUser.role === 'ADMIN'
+        ? tasks
+        : tasks.filter(t => t.assigned_to.toLowerCase() === currentSessionUser.name.toLowerCase());
+
+      const compCount = userScopedTasks.filter(t => t.status === 'COMPLETED').length;
+      const totalCount = Math.max(userScopedTasks.length, 1);
+      const overCount = userScopedTasks.filter(t => evaluateTaskTiming(t).isOverdue).length;
+      const holdCount = userScopedTasks.filter(t => t.status === 'DEPENDENCY_ON_HOLD').length;
+      const progCount = userScopedTasks.filter(t => t.status === 'ON_PROGRESS').length;
+
+      const compPct = Math.round((compCount / totalCount) * 100);
+      const overPct = Math.round((overCount / totalCount) * 100);
+      const holdPct = Math.round((holdCount / totalCount) * 100);
+
+      const actualY = Math.max(25, 185 - Math.round((compCount / totalCount) * 155));
+      svg.innerHTML = `
+        <line x1="0" y1="40" x2="500" y2="40" stroke="#334155" stroke-dasharray="4" opacity="0.4" />
+        <line x1="0" y1="90" x2="500" y2="90" stroke="#334155" stroke-dasharray="4" opacity="0.4" />
+        <line x1="0" y1="140" x2="500" y2="140" stroke="#334155" stroke-dasharray="4" opacity="0.4" />
+        <line x1="0" y1="190" x2="500" y2="190" stroke="#334155" />
+
+        <path d="M 10 185 Q 160 160 260 90 T 490 35" fill="none" stroke="#7c3aed" stroke-width="3" />
+        <path d="M 10 185 Q 180 170 280 120 T 460 ${actualY}" fill="none" stroke="#0d9488" stroke-width="3.5" stroke-linecap="round" />
+        
+        <circle cx="460" cy="${actualY}" r="6" fill="#2dd4bf" class="animate-pulse" />
+        <text x="360" y="${actualY - 12}" fill="#2dd4bf" font-size="11" font-family="monospace" font-weight="bold">Velocity (${compPct}%)</text>
+      `;
+
+      document.getElementById('visualKpiEfficiency').textContent = `${compPct}%`;
+      document.getElementById('pieCompleted').setAttribute('stroke-dasharray', `${compPct}, 100`);
+      document.getElementById('pieOverdue').setAttribute('stroke-dasharray', `${overPct}, 100`);
+      document.getElementById('pieOverdue').setAttribute('stroke-dashoffset', `-${compPct}`);
+      document.getElementById('pieHold').setAttribute('stroke-dasharray', `${holdPct}, 100`);
+      document.getElementById('pieHold').setAttribute('stroke-dashoffset', `-${compPct + overPct}`);
+
+      document.getElementById('labelPieComp').textContent = `Completed (${compCount})`;
+      document.getElementById('labelPieOver').textContent = `Overdue / Out (${overCount})`;
+      document.getElementById('labelPieHold').textContent = `On Hold (${holdCount})`;
+      document.getElementById('labelPieProg').textContent = `In Progress (${progCount})`;
+    }
+
+    // 14. Usage & Activity Table (Strict Privacy Engine)
+    function renderUsageTable() {
+      const tbody = document.getElementById('usageTableBody');
+      const subtitle = document.getElementById('usageScopeSubtitle');
+      if (!tbody || !currentSessionUser) return;
+
+      // RULE: Only Saravanan M (ADMIN) sees everyone; Employees only see their own time!
+      const visibleUsers = (currentSessionUser.role === 'ADMIN' || currentSessionUser.name === 'Saravanan M')
+        ? users
+        : users.filter(u => u.name.toLowerCase() === currentSessionUser.name.toLowerCase());
+
+      if (subtitle) {
+        subtitle.textContent = (currentSessionUser.role === 'ADMIN' || currentSessionUser.name === 'Saravanan M')
+          ? "Master company-wide usage and active session logs across all personnel."
+          : `Personal platform activity metrics for ${currentSessionUser.name}.`;
+      }
+
+      tbody.innerHTML = visibleUsers.map(u => {
+        const isCurrent = currentSessionUser && u.name === currentSessionUser.name;
+        const totalSecs = (u.usageSeconds || 3600) + (isCurrent ? sessionSeconds : 0);
+        const hrs = (totalSecs / 3600).toFixed(1);
+
+        return `
+          <tr class="hover:bg-purple-950/20 font-mono">
+            <td class="p-3 font-sans font-bold flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full ${isCurrent ? 'bg-emerald-400 animate-ping' : 'bg-slate-600'}"></span>
+              ${u.name}
+            </td>
+            <td class="p-3 text-sub font-sans">${u.role}</td>
+            <td class="p-3">${isCurrent ? '<span class="text-emerald-400 font-bold">Active Now</span>' : '<span class="text-sub">Offline</span>'}</td>
+            <td class="p-3 text-sub">${isCurrent ? document.getElementById('sessionDurationDisplay').textContent : '-'}</td>
+            <td class="p-3 text-teal-400 font-bold">${hrs} Hours</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // 15. IT Security Portal
+    function renderITSecurityPortal() {
+      const tbody = document.getElementById('itUserTableBody');
+      if (!tbody) return;
+
+      const now = Date.now();
+      const oneDay = 86400000;
+      const oneWeek = 86400000 * 7;
+      const oneMonth = 86400000 * 30;
+
+      const todayResets = resetAuditLog.filter(l => (now - l.timestamp) <= oneDay).length;
+      const weekResets = resetAuditLog.filter(l => (now - l.timestamp) <= oneWeek).length;
+      const monthResets = resetAuditLog.filter(l => (now - l.timestamp) <= oneMonth).length;
+
+      document.getElementById('resetTodayCount').textContent = todayResets;
+      document.getElementById('resetWeekCount').textContent = weekResets;
+      document.getElementById('resetMonthCount').textContent = monthResets;
+
+      const counts = {};
+      resetAuditLog.forEach(l => { counts[l.userName] = (counts[l.userName] || 0) + 1; });
+      let maxUser = "None", maxCount = 0;
+      for (const [u, c] of Object.entries(counts)) {
+        if (c > maxCount) { maxCount = c; maxUser = u; }
+      }
+      document.getElementById('frequentResetTarget').textContent = maxCount > 0 ? `${maxUser} (${maxCount} resets)` : "None";
+
+      tbody.innerHTML = users.map(u => `
+        <tr class="hover:bg-purple-950/20">
+          <td class="p-3 font-mono text-purple-400 font-bold">${u.id || 'USR-01'}</td>
+          <td class="p-3 font-bold">${u.name}</td>
+          <td class="p-3 text-sub font-mono">${u.email || u.name.toLowerCase().replace(' ', '') + '@vistaengg.com'}</td>
+          <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold ${u.role==='ADMIN'?'bg-purple-950 text-purple-300 border border-purple-800':u.role==='IT'?'bg-teal-950 text-teal-300 border border-teal-800':'inner-box text-sub'}">${u.role}</span></td>
+          <td class="p-3">
+            ${u.pendingReset 
+              ? `<span class="px-2 py-0.5 rounded bg-red-950/80 text-red-300 border border-red-800 text-[10px] font-bold animate-pulse">Pending Request</span>` 
+              : `<span class="text-sub text-[10px]">None</span>`
+            }
+          </td>
+          <td class="p-3">
+            <button onclick="executePasswordReset('${u.name}')" class="px-3 py-1 bg-amber-600/20 hover:bg-amber-600/40 text-amber-300 border border-amber-600/40 rounded text-[11px] font-mono transition">
+              <i class="fa-solid fa-key mr-1"></i> Authorize & Reset
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function executePasswordReset(targetName) {
+      if (confirm(`Authorize immediate password reset for ${targetName}? A temporary OTP passkey will be generated.`)) {
+        const u = users.find(x => x.name === targetName);
+        if (u) u.pendingReset = false;
+        resetAuditLog.unshift({ userName: targetName, timestamp: Date.now() });
+        saveState();
+        alert(`Passkey for ${targetName} has been successfully reset!`);
+      }
+    }
+
+    function openUserModal() { document.getElementById('modalUser').classList.remove('hidden'); }
+    function closeUserModal() { document.getElementById('modalUser').classList.add('hidden'); }
+
+    function handleCreateUser(e) {
+      e.preventDefault();
+      const name = document.getElementById('newUserName').value.trim();
+      const role = document.getElementById('newUserRole').value;
+      if (!name) return;
+
+      users.push({
+        id: `USR-${users.length + 1}`.padStart(6, '0'),
+        name,
+        role,
+        email: name.toLowerCase().replace(/\s+/g, '.') + '@vistaengg.com',
+        usageSeconds: 0,
+        resetCount: 0,
+        pendingReset: false
+      });
+
+      saveState();
+      populateFormDropdowns();
+      populateLoginDropdown();
+      closeUserModal();
+      document.getElementById('newUserName').value = '';
+      alert(`User "${name}" provisioned with role [${role}]!`);
+    }
+
+    function toggleTheme() {
+      const htmlEl = document.documentElement;
+      const isDark = htmlEl.classList.toggle('dark');
+      const themeLabel = document.getElementById('themeLabel');
+      const themeIcon = document.getElementById('themeIcon');
+
+      if (!isDark) {
+        themeLabel.textContent = "Light";
+        themeIcon.className = "fa-solid fa-sun text-amber-500";
+      } else {
+        themeLabel.textContent = "Dark";
+        themeIcon.className = "fa-solid fa-moon text-purple-400";
+      }
+    }
+  </script>
+</body>
+</html>
