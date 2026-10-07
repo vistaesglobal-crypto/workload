@@ -1008,13 +1008,12 @@
 
   <!-- JAVASCRIPT STATE ENGINE -->
   <script>
-    const STORAGE_KEY_DB = 'VISTA_OPS_DB_V7';
-    const STORAGE_KEY_SESSION = 'VISTA_ACTIVE_USER_NAME_V6';
-    const STORAGE_KEY_SESSION_SECS = 'VISTA_SESSION_SECS_V6';
-    const STORAGE_KEY_VIEW = 'VISTA_CURRENT_VIEW_V6';
-    const STORAGE_KEY_THEME = 'VISTA_THEME_V6';
-    const STORAGE_KEY_LAST_ACTIVITY = 'VISTA_LAST_ACTIVITY_V7';
-    const MAX_ACTIVITY_LOGS = 500;
+    const STORAGE_KEY_DB = 'VISTA_OPS_DB_V8';
+    const STORAGE_KEY_SESSION = 'VISTA_ACTIVE_USER_NAME_V8';
+    const STORAGE_KEY_SESSION_SECS = 'VISTA_SESSION_SECS_V8';
+    const STORAGE_KEY_VIEW = 'VISTA_CURRENT_VIEW_V8';
+    const STORAGE_KEY_THEME = 'VISTA_THEME_V8';
+    const MAX_ACTIVITY_LOGS = 200;
 
     const INITIAL_ROSTER = [
       { id: "USR-01", name: "Saravanan M", role: "ADMIN", email: "saravanan@vistaengg.com", usageSeconds: 14200, resetCount: 0, pendingReset: false },
@@ -1027,7 +1026,6 @@
       { id: "USR-08", name: "Magesh kumar S", role: "EMPLOYEE", email: "magesh@vistaengg.com", usageSeconds: 4300, resetCount: 1, pendingReset: false }
     ];
 
-    // Seed tasks with Mohan's 12 tasks to reflect the matrix count accurately
     function generateInitialTasks() {
       const taskTitles = [
         "PLC Automation Logic Verification",
@@ -1084,21 +1082,28 @@
       }
     ];
 
-    function loadPersistedState() {
+    function cleanOldStorageKeys() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY_DB) || localStorage.getItem('VISTA_OPS_DB_V6');
+        ['VISTA_OPS_DB_V6', 'VISTA_OPS_DB_V7', 'VISTA_ACTIVE_USER_NAME_V6', 'VISTA_ACTIVE_USER_NAME_V7'].forEach(k => localStorage.removeItem(k));
+      } catch (e) {}
+    }
+
+    function loadPersistedState() {
+      cleanOldStorageKeys();
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_DB);
         if (raw) {
           const parsed = JSON.parse(raw);
           return {
-            users: parsed.users || INITIAL_ROSTER,
-            tasks: (parsed.tasks && parsed.tasks.length > 0) ? parsed.tasks : generateInitialTasks(),
+            users: Array.isArray(parsed.users) && parsed.users.length ? parsed.users : INITIAL_ROSTER,
+            tasks: Array.isArray(parsed.tasks) && parsed.tasks.length ? parsed.tasks : generateInitialTasks(),
             notifications: Array.isArray(parsed.notifications) ? parsed.notifications : INITIAL_NOTIFICATIONS,
             resetAuditLog: Array.isArray(parsed.resetAuditLog) ? parsed.resetAuditLog : [],
             activityLog: Array.isArray(parsed.activityLog) ? parsed.activityLog : []
           };
         }
       } catch (e) {
-        console.warn("Hydration fallback:", e);
+        console.warn("Storage hydration fallback:", e);
       }
       return {
         users: INITIAL_ROSTER,
@@ -1118,11 +1123,27 @@
     let currentSessionUser = null;
     
     let sessionSeconds = parseInt(localStorage.getItem(STORAGE_KEY_SESSION_SECS) || '0', 10);
+    if (isNaN(sessionSeconds)) sessionSeconds = 0;
+
     let activeFilter = 'ALL';
     let pendingProofTaskId = null;
     let tempProofUrl = null;
     let activeCommentTaskId = null;
     normalizeLoadedState();
+
+    function formatSessionDuration(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`;
+    }
+
+    function updateSessionDisplays() {
+      const displayStr = formatSessionDuration(sessionSeconds);
+      const sessionDisp = document.getElementById('sessionDurationDisplay');
+      if (sessionDisp) sessionDisp.textContent = displayStr;
+      const heroEl = document.getElementById('heroSessionTime');
+      if (heroEl) heroEl.textContent = displayStr;
+    }
 
     function initTheme() {
       const savedTheme = localStorage.getItem(STORAGE_KEY_THEME) || 'dark';
@@ -1143,17 +1164,16 @@
     window.addEventListener('DOMContentLoaded', () => {
       initTheme();
       populateLoginDropdown();
+      updateSessionDisplays();
 
       const savedUserName = localStorage.getItem(STORAGE_KEY_SESSION);
       const savedView = localStorage.getItem(STORAGE_KEY_VIEW) || 'welcome';
 
       if (savedUserName) {
-        const matchedUser = users.find(u => u.name === savedUserName);
+        const matchedUser = users.find(u => u.name.trim().toLowerCase() === savedUserName.trim().toLowerCase());
         if (matchedUser) {
           authenticateUser(matchedUser, false);
           navigateTo(savedView);
-          addActivityLog('SESSION_RESTORED', `Restored view: ${savedView}`);
-          saveState({ skipRender: true });
         } else {
           document.getElementById('loginScreen').classList.remove('hidden');
         }
@@ -1161,7 +1181,7 @@
         document.getElementById('loginScreen').classList.remove('hidden');
       }
 
-      // Robot quotes
+      // Robot conversation cycle
       const phrases1 = [
         "Morning Unit 2! Ready for system telemetry?",
         "Auditing task queues for Saravanan M...",
@@ -1183,27 +1203,27 @@
         if (b2) b2.textContent = `"${phrases2[pIdx]}"`;
       }, 4000);
 
-      // Real-time Session & Platform Usage Counter (Every 1s)
+      // Active Session Clock & Counter
       setInterval(() => {
         const currentNow = new Date();
-        document.getElementById('liveSecClock').textContent = currentNow.toLocaleTimeString();
+        const liveSecEl = document.getElementById('liveSecClock');
+        if (liveSecEl) liveSecEl.textContent = currentNow.toLocaleTimeString();
+
         if (currentSessionUser) {
           sessionSeconds++;
-          localStorage.setItem(STORAGE_KEY_SESSION_SECS, sessionSeconds);
+          localStorage.setItem(STORAGE_KEY_SESSION_SECS, String(sessionSeconds));
 
-          // Update user's real cumulative time in memory
-          const userObj = users.find(u => u.name === currentSessionUser.name);
+          const userObj = users.find(u => u.name.trim().toLowerCase() === currentSessionUser.name.trim().toLowerCase());
           if (userObj) {
             userObj.usageSeconds = (userObj.usageSeconds || 0) + 1;
           }
-          if (sessionSeconds % 10 === 0) saveState({ skipRender: true });
 
-          const m = Math.floor(sessionSeconds / 60);
-          const s = sessionSeconds % 60;
-          const displayStr = `${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`;
-          document.getElementById('sessionDurationDisplay').textContent = displayStr;
-          const heroEl = document.getElementById('heroSessionTime');
-          if (heroEl) heroEl.textContent = displayStr;
+          updateSessionDisplays();
+
+          // Auto-save session periodically
+          if (sessionSeconds % 15 === 0) {
+            saveState({ skipRender: true });
+          }
         }
         updateDynamicTimers();
       }, 1000);
@@ -1221,11 +1241,11 @@
         level
       });
       if (activityLog.length > MAX_ACTIVITY_LOGS) activityLog = activityLog.slice(0, MAX_ACTIVITY_LOGS);
-      localStorage.setItem(STORAGE_KEY_LAST_ACTIVITY, JSON.stringify(activityLog.slice(0, 25)));
     }
 
     function saveState(options = {}) {
       try {
+        if (activityLog.length > MAX_ACTIVITY_LOGS) activityLog = activityLog.slice(0, MAX_ACTIVITY_LOGS);
         const payload = {
           users,
           tasks,
@@ -1250,9 +1270,22 @@
         }
         return true;
       } catch (err) {
-        console.error('Storage save issue:', err);
-        alert('The change could not be saved. Browser storage may be full. Please clear old VISTA Operations data and try again.');
-        return false;
+        console.warn('Storage save fallback triggered:', err);
+        try {
+          activityLog = activityLog.slice(0, 50);
+          resetAuditLog = resetAuditLog.slice(0, 50);
+          localStorage.setItem(STORAGE_KEY_DB, JSON.stringify({
+            users,
+            tasks,
+            notifications: taskNotifications.slice(0, 50),
+            resetAuditLog,
+            activityLog
+          }));
+          return true;
+        } catch (innerErr) {
+          console.error('Critical quota error:', innerErr);
+          return false;
+        }
       }
     }
 
@@ -1268,7 +1301,7 @@
         cw: Number(t.cw) || 40,
         title: t.title || 'Untitled Operational Task',
         category: t.category || 'Operations',
-        requester: t.requester || 'System',
+        requester: t.requester || 'Saravanan M',
         assigned_to: t.assigned_to || 'Mohan',
         status: t.status || 'PENDING',
         assigned_at: t.assigned_at || new Date().toISOString(),
@@ -1293,7 +1326,7 @@
       const isAdmin = currentSessionUser.role === 'ADMIN' || currentSessionUser.role === 'IT';
       const rows = isAdmin ? activityLog : activityLog.filter(x => x.actor.toLowerCase() === currentSessionUser.name.toLowerCase());
       if (countEl) countEl.textContent = `${rows.length} events`;
-      tbody.innerHTML = rows.slice(0, 100).map((x, i) => `
+      tbody.innerHTML = rows.slice(0, 100).map((x) => `
         <tr class="hover:bg-purple-950/20 transition">
           <td class="p-3 font-mono text-sub whitespace-nowrap">${new Date(x.timestamp).toLocaleString()}</td>
           <td class="p-3 font-bold">${x.actor}</td>
@@ -1311,10 +1344,11 @@
       saveState();
     }
 
-
     function populateLoginDropdown() {
       const select = document.getElementById('loginUserSelect');
-      select.innerHTML = users.map(u => `<option value="${u.name}">${u.name} (${u.role})</option>`).join('');
+      if (select) {
+        select.innerHTML = users.map(u => `<option value="${u.name}">${u.name} (${u.role})</option>`).join('');
+      }
     }
 
     function handleLoginSubmit(e) {
@@ -1327,8 +1361,8 @@
     }
 
     function authenticateUser(userObj, switchView = true) {
+      if (!userObj) return;
       currentSessionUser = userObj;
-      addActivityLog('LOGIN', 'Authenticated and opened the operations workspace');
       localStorage.setItem(STORAGE_KEY_SESSION, currentSessionUser.name);
 
       document.getElementById('loginScreen').classList.add('hidden');
@@ -1338,6 +1372,7 @@
       document.getElementById('welcomeUserNameHero').textContent = currentSessionUser.name;
 
       populateFormDropdowns();
+      updateSessionDisplays();
 
       const assignBtnWrap = document.getElementById('assignTaskBtnWrap');
       if (currentSessionUser.role === 'IT') {
@@ -1369,10 +1404,17 @@
         document.getElementById('matrixHeaderTitle').textContent = 'Personal Performance Matrix';
       }
 
+      renderDashboardMatrix();
+      renderWorkload();
+      renderDelegatedTasks();
+      renderMessagesList();
+      renderVisualCurves();
+      renderUsageTable();
+      renderActivityLog();
+
       if (switchView) {
         navigateTo('welcome');
       }
-      saveState();
     }
 
     function logoutSession() {
@@ -1383,10 +1425,10 @@
       localStorage.removeItem(STORAGE_KEY_SESSION_SECS);
       localStorage.removeItem(STORAGE_KEY_VIEW);
       sessionSeconds = 0;
+      updateSessionDisplays();
       document.getElementById('loginScreen').classList.remove('hidden');
     }
 
-    // Trigger Forgot Password: sends to IT Badge, Message Box, & Workload Register
     function triggerForgotPasswordFromLogin() {
       const selectedName = document.getElementById('loginUserSelect').value;
       if (confirm(`Send formal password reset request for ${selectedName} to IT Administrator and Saravanan M?`)) {
@@ -1398,10 +1440,8 @@
         resetAuditLog.unshift({ userName: selectedName, timestamp: Date.now() });
         addActivityLog('PASSWORD_RESET_REQUESTED', `Reset requested for ${selectedName}`, 'WARN');
 
-        // 1. Add notification to Inbox (Message Box)
-        const notifId = 'ntf-reset-' + Date.now();
         taskNotifications.unshift({
-          id: notifId,
+          id: 'ntf-reset-' + Date.now(),
           taskId: 'tsk-reset-' + Date.now(),
           sender: selectedName,
           recipient: "IT Administrator",
@@ -1410,7 +1450,6 @@
           read: false
         });
 
-        // 2. Add as an assigned task in Workload Register for IT Administrator
         tasks.unshift({
           id: 'tsk-reset-' + Date.now(),
           serial_no: tasks.length + 1,
@@ -1446,7 +1485,7 @@
 
       const labels = {
         welcome: 'Welcome Portal',
-        dashboard: 'Operations Matrix',
+        dashboard: currentSessionUser && currentSessionUser.role !== 'ADMIN' ? 'My Personal Dashboard' : 'Operations Matrix',
         workload: 'Workload Execution Register',
         delegated: 'Delegated Tasks Tracker',
         curves: 'Visual Curves & Metrics',
@@ -1456,21 +1495,15 @@
       };
       document.getElementById('currentViewBreadcrumb').textContent = labels[viewId] || 'Workspace';
 
-      // Always save active view
       localStorage.setItem(STORAGE_KEY_VIEW, viewId);
-      if (currentSessionUser) {
-        const previous = localStorage.getItem('VISTA_PREVIOUS_VIEW_V7');
-        if (previous !== viewId) addActivityLog('NAVIGATION', `Opened ${labels[viewId] || viewId}`);
-        localStorage.setItem('VISTA_PREVIOUS_VIEW_V7', viewId);
-      }
 
+      if (viewId === 'dashboard') renderDashboardMatrix();
       if (viewId === 'curves') renderVisualCurves();
-      if (viewId === 'usage') renderUsageTable();
+      if (viewId === 'usage') { renderUsageTable(); renderActivityLog(); }
       if (viewId === 'itSecurity') renderITSecurityPortal();
       if (viewId === 'delegated') renderDelegatedTasks();
       if (viewId === 'workload') renderWorkload();
       if (viewId === 'messages') renderMessagesList();
-      if (viewId === 'usage') renderActivityLog();
     }
 
     const ROBOT_PHRASES = [
@@ -1488,9 +1521,10 @@
     function triggerRobotSpeech() {
       const bubble = document.getElementById('robotSpeechBubble');
       const eyes = document.getElementById('robotEyes');
-      eyes.setAttribute('fill', '#f59e0b');
-      setTimeout(() => eyes.setAttribute('fill', '#2dd4bf'), 400);
-
+      if (eyes) {
+        eyes.setAttribute('fill', '#f59e0b');
+        setTimeout(() => eyes.setAttribute('fill', '#2dd4bf'), 400);
+      }
       phraseIndex = (phraseIndex + 1) % ROBOT_PHRASES.length;
       bubble.textContent = `🤖 ${ROBOT_PHRASES[phraseIndex]}`;
       bubble.classList.add('scale-105');
@@ -1507,10 +1541,10 @@
 
       const rosterToDisplay = currentSessionUser.role === 'ADMIN'
         ? users.filter(u => u.role === 'EMPLOYEE' || u.name === 'Mohan' || u.name === 'Pradeepa')
-        : users.filter(u => u.name.toLowerCase() === currentSessionUser.name.toLowerCase());
+        : users.filter(u => u.name.trim().toLowerCase() === currentSessionUser.name.trim().toLowerCase());
 
       rosterToDisplay.forEach((u, i) => {
-        const uTasks = tasks.filter(t => t.assigned_to.toLowerCase() === u.name.toLowerCase());
+        const uTasks = tasks.filter(t => (t.assigned_to || '').trim().toLowerCase() === u.name.trim().toLowerCase());
         const uTotal = uTasks.length;
 
         let uComp = 0, uProg = 0, uPend = 0, uHold = 0, uLate = 0, uOver = 0;
@@ -1566,20 +1600,22 @@
       const overallRating = tot > 0 ? Math.round((comp / tot) * 100) : 100;
       document.getElementById('heroEfficiencyRate').textContent = `${overallRating}%`;
 
-      tfoot.innerHTML = `
-        <tr>
-          <td colspan="2" class="py-2.5 px-3 border border-slate-700/50 text-right uppercase font-mono">Total</td>
-          <td class="py-2 border border-slate-700/50">${tot}</td>
-          <td class="py-2 border border-slate-700/50">${comp}</td>
-          <td class="py-2 border border-slate-700/50">${prog}</td>
-          <td class="py-2 border border-slate-700/50">${pend}</td>
-          <td class="py-2 border border-slate-700/50">${hold}</td>
-          <td class="py-2 border border-slate-700/50">${late}</td>
-          <td class="py-2 border border-slate-700/50">${over}</td>
-          <td class="py-2 border border-slate-700/50">${comp + prog + pend + hold + late}</td>
-          <td class="py-2 border border-slate-700/50 ${overallRating >= 80 ? 'bg-emerald-600' : 'bg-red-600'} text-white font-black">${overallRating}%</td>
-        </tr>
-      `;
+      if (tfoot) {
+        tfoot.innerHTML = `
+          <tr>
+            <td colspan="2" class="py-2.5 px-3 border border-slate-700/50 text-right uppercase font-mono">Total</td>
+            <td class="py-2 border border-slate-700/50">${tot}</td>
+            <td class="py-2 border border-slate-700/50">${comp}</td>
+            <td class="py-2 border border-slate-700/50">${prog}</td>
+            <td class="py-2 border border-slate-700/50">${pend}</td>
+            <td class="py-2 border border-slate-700/50">${hold}</td>
+            <td class="py-2 border border-slate-700/50">${late}</td>
+            <td class="py-2 border border-slate-700/50">${over}</td>
+            <td class="py-2 border border-slate-700/50">${comp + prog + pend + hold + late}</td>
+            <td class="py-2 border border-slate-700/50 ${overallRating >= 80 ? 'bg-emerald-600' : 'bg-red-600'} text-white font-black">${overallRating}%</td>
+          </tr>
+        `;
+      }
     }
 
     function filterWorkloadFromCard(metric) {
@@ -1595,21 +1631,21 @@
       renderWorkload();
     }
 
-    // Workload Register Rendering (Guaranteed Full List Visibility)
     function renderWorkload() {
       const tbody = document.getElementById('workloadTableBody');
       if (!tbody || !currentSessionUser) return;
 
-      const countEl = document.getElementById('workloadAllCount');
-      if (countEl) countEl.textContent = currentSessionUser.role === 'ADMIN' ? tasks.length : tasks.filter(t => (t.assigned_to || '').toLowerCase().trim() === currentSessionUser.name.toLowerCase().trim()).length;
       tbody.innerHTML = '';
-      let filtered = tasks;
-
-      // Filter tasks assigned to current user, unless role is ADMIN
+      
+      let scopedTasks = tasks;
       if (currentSessionUser.role !== 'ADMIN') {
-        filtered = filtered.filter(t => t.assigned_to.toLowerCase().trim() === currentSessionUser.name.toLowerCase().trim());
+        scopedTasks = tasks.filter(t => (t.assigned_to || '').trim().toLowerCase() === currentSessionUser.name.trim().toLowerCase());
       }
 
+      const countEl = document.getElementById('workloadAllCount');
+      if (countEl) countEl.textContent = scopedTasks.length;
+
+      let filtered = scopedTasks;
       if (activeFilter === 'COMPLETED') filtered = filtered.filter(t => t.status === 'COMPLETED');
       else if (activeFilter === 'ON_PROGRESS') filtered = filtered.filter(t => t.status === 'ON_PROGRESS');
       else if (activeFilter === 'PENDING') filtered = filtered.filter(t => t.status === 'PENDING');
@@ -1617,7 +1653,7 @@
       else if (activeFilter === 'OVERDUE') filtered = filtered.filter(t => evaluateTaskTiming(t).isOverdue);
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="12" class="p-8 text-center text-sub">No tasks in this view. Click "View All" to display all items.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="12" class="p-8 text-center text-sub">No tasks in this view. Click "View All" or assign a new task.</td></tr>`;
         return;
       }
 
@@ -1649,11 +1685,12 @@
           `;
         }
 
-        const assignedDateTimeStr = new Date(task.assigned_at).toLocaleString([], { dateStyle: 'numeric', timeStyle: 'short' });
+        // FIXED: Used standard short dateStyle
+        const assignedDateTimeStr = new Date(task.assigned_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' });
 
         const canViewProof = currentSessionUser.role === 'ADMIN' || 
-                             task.assigned_to.toLowerCase() === currentSessionUser.name.toLowerCase() || 
-                             task.requester.toLowerCase() === currentSessionUser.name.toLowerCase();
+                             task.assigned_to.trim().toLowerCase() === currentSessionUser.name.trim().toLowerCase() || 
+                             task.requester.trim().toLowerCase() === currentSessionUser.name.trim().toLowerCase();
 
         tbody.innerHTML += `
           <tr id="task-row-${task.id}" class="transition ${evalRes.rowClass}">
@@ -1724,7 +1761,7 @@
       tbody.innerHTML = '';
 
       const myDelegated = tasks.filter(t => 
-        currentSessionUser.role === 'ADMIN' || t.requester.toLowerCase().trim() === currentSessionUser.name.toLowerCase().trim()
+        currentSessionUser.role === 'ADMIN' || (t.requester || '').trim().toLowerCase() === currentSessionUser.name.trim().toLowerCase()
       );
 
       if (myDelegated.length === 0) {
@@ -1734,7 +1771,8 @@
 
       myDelegated.forEach((task, idx) => {
         const evalRes = evaluateTaskTiming(task);
-        const assignedDateTimeStr = new Date(task.assigned_at).toLocaleString([], { dateStyle: 'numeric', timeStyle: 'short' });
+        // FIXED: Used standard short dateStyle
+        const assignedDateTimeStr = new Date(task.assigned_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' });
 
         tbody.innerHTML += `
           <tr id="task-row-${task.id}" class="transition ${evalRes.rowClass}">
@@ -1822,7 +1860,7 @@
           text: text,
           time: new Date().toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })
         });
-        addActivityLog('TASK_COMMENT_ADDED', `Comment added to “${t.title}”`);
+        addActivityLog('TASK_COMMENT_ADDED', `Comment added to "${t.title}"`);
         saveState();
         openCommentsModal(activeCommentTaskId);
       }
@@ -1913,7 +1951,7 @@
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          const maxDim = 500;
+          const maxDim = 400;
           let w = img.width;
           let h = img.height;
           if (w > h && w > maxDim) {
@@ -1927,7 +1965,7 @@
           canvas.height = h;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, w, h);
-          tempProofUrl = canvas.toDataURL('image/jpeg', 0.65);
+          tempProofUrl = canvas.toDataURL('image/jpeg', 0.5);
 
           document.getElementById('proofPreviewImg').src = tempProofUrl;
           document.getElementById('proofFileName').textContent = file.name;
@@ -1947,7 +1985,7 @@
         t.status = 'COMPLETED';
         t.actual_completed_at = new Date().toISOString();
         t.closure_note = `Closed: ${new Date().toLocaleString([], { dateStyle:'short', timeStyle:'short' })}`;
-        addActivityLog('TASK_COMPLETED', `Completed “${t.title}” with photographic proof`);
+        addActivityLog('TASK_COMPLETED', `Completed "${t.title}" with photographic proof`);
         saveState();
         closeProofModal();
         alert('Photo verified! Task marked as COMPLETED.');
@@ -1965,7 +2003,7 @@
       }
 
       t.status = newStatus;
-      addActivityLog('TASK_STATUS_CHANGED', `Task “${t.title}” changed to ${newStatus}`);
+      addActivityLog('TASK_STATUS_CHANGED', `Task "${t.title}" changed to ${newStatus}`);
       saveState();
     }
 
@@ -1974,7 +2012,6 @@
       w.document.write(`<img src="${dataUrl}" style="max-width:100%; height:auto;" alt="Proof" />`);
     }
 
-    // Task Creation
     function openTaskModal() {
       populateFormDropdowns();
       
@@ -2007,7 +2044,6 @@
       }
     }
 
-    // Direct manual handler to guarantee task creation
     function handleCreateTaskManual() {
       try {
         if (!currentSessionUser) { alert('Your session has expired. Please log in again.'); return; }
@@ -2024,13 +2060,14 @@
         if (!title) return alert('Please enter a task title.');
         if (!assignedTo) return alert('Please select an assignee.');
         if (!targetDate) return alert('Please choose a target deadline date.');
-        if (!users.some(u => u.name.toLowerCase().trim() === assignedTo.toLowerCase().trim())) return alert('Selected assignee is no longer available. Refresh the user list and try again.');
+        if (!users.some(u => u.name.trim().toLowerCase() === assignedTo.trim().toLowerCase())) {
+          return alert('Selected assignee is no longer available. Refresh the user list and try again.');
+        }
 
         let hour24 = hourVal;
         if (periodVal === 'PM' && hourVal < 12) hour24 += 12;
         if (periodVal === 'AM' && hourVal === 12) hour24 = 0;
         const deadline = new Date(`${targetDate}T${String(hour24).padStart(2,'0')}:${minVal}:00`);
-        if (Number.isNaN(deadline.getTime()) || deadline.getTime() <= Date.now()) return alert('Please select a future deadline.');
 
         const now = new Date();
         const newTaskId = `tsk-${Date.now()}-${Math.random().toString(36).slice(2,6)}`;
@@ -2045,19 +2082,27 @@
         };
         tasks.unshift(newTaskObj);
         tasks.forEach((t, i) => t.serial_no = i + 1);
+
         taskNotifications.unshift({
           id: `ntf-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,
           taskId: newTaskId, sender: creatorName, recipient: assignedTo, taskTitle: title,
-          time: now.toLocaleString([], { dateStyle:'short', timeStyle:'short' }), read: assignedTo.toLowerCase() === creatorName.toLowerCase()
+          time: now.toLocaleString([], { dateStyle:'short', timeStyle:'short' }), 
+          read: assignedTo.trim().toLowerCase() === creatorName.trim().toLowerCase()
         });
-        addActivityLog('TASK_CREATED', `Created “${title}” and assigned it to ${assignedTo}`);
+
+        addActivityLog('TASK_CREATED', `Created "${title}" and assigned it to ${assignedTo}`);
         activeFilter = 'ALL';
-        const badge = document.getElementById('activeFilterBadge'); if (badge) badge.textContent = 'All Assigned Tasks';
-        if (!saveState()) return;
+        const badge = document.getElementById('activeFilterBadge'); 
+        if (badge) badge.textContent = 'All Assigned Tasks';
+
+        saveState();
+
         closeTaskModal();
         titleInput.value = '';
         document.getElementById('taskDescInput').value = '';
-        navigateTo(assignedTo.toLowerCase() === creatorName.toLowerCase() ? 'workload' : 'delegated');
+
+        const targetView = (assignedTo.trim().toLowerCase() === creatorName.trim().toLowerCase()) ? 'workload' : 'delegated';
+        navigateTo(targetView);
         alert(`Task successfully published and assigned to ${assignedTo}.`);
       } catch (err) {
         console.error('Task creation failed:', err);
@@ -2065,7 +2110,6 @@
       }
     }
 
-    // Task Message Box: lists all assignment notifications & password alerts
     function renderMessagesList() {
       const container = document.getElementById('messagesListContainer');
       const badge = document.getElementById('unreadMessagesHeaderBadge');
@@ -2077,11 +2121,11 @@
       const relevantNotifs = (currentSessionUser.role === 'ADMIN' || currentSessionUser.role === 'IT')
         ? taskNotifications
         : taskNotifications.filter(n => 
-            n.recipient.toLowerCase().trim() === currentSessionUser.name.toLowerCase().trim() || 
-            n.sender.toLowerCase().trim() === currentSessionUser.name.toLowerCase().trim()
+            n.recipient.trim().toLowerCase() === currentSessionUser.name.trim().toLowerCase() || 
+            n.sender.trim().toLowerCase() === currentSessionUser.name.trim().toLowerCase()
           );
 
-      const unreadCount = relevantNotifs.filter(n => !n.read && n.recipient.toLowerCase().trim() === currentSessionUser.name.toLowerCase().trim()).length;
+      const unreadCount = relevantNotifs.filter(n => !n.read && n.recipient.trim().toLowerCase() === currentSessionUser.name.trim().toLowerCase()).length;
       
       badge.textContent = `${unreadCount} Unread`;
       if (unreadCount > 0) {
@@ -2097,7 +2141,7 @@
       }
 
       relevantNotifs.forEach((item, idx) => {
-        const isUnreadForMe = !item.read && item.recipient.toLowerCase().trim() === currentSessionUser.name.toLowerCase().trim();
+        const isUnreadForMe = !item.read && item.recipient.trim().toLowerCase() === currentSessionUser.name.trim().toLowerCase();
 
         container.innerHTML += `
           <div onclick="jumpToTaskFromNotification('${item.id}', '${item.taskId}')" 
@@ -2141,7 +2185,7 @@
       saveState();
 
       const t = tasks.find(x => x.id === taskId);
-      if (t && (currentSessionUser.role === 'ADMIN' || currentSessionUser.role === 'IT' || t.assigned_to.toLowerCase() === currentSessionUser.name.toLowerCase())) {
+      if (t && (currentSessionUser.role === 'ADMIN' || currentSessionUser.role === 'IT' || t.assigned_to.trim().toLowerCase() === currentSessionUser.name.trim().toLowerCase())) {
         navigateTo('workload');
       } else {
         navigateTo('delegated');
@@ -2163,7 +2207,7 @@
 
       const userScopedTasks = currentSessionUser.role === 'ADMIN'
         ? tasks
-        : tasks.filter(t => t.assigned_to.toLowerCase() === currentSessionUser.name.toLowerCase());
+        : tasks.filter(t => t.assigned_to.trim().toLowerCase() === currentSessionUser.name.trim().toLowerCase());
 
       const compCount = userScopedTasks.filter(t => t.status === 'COMPLETED').length;
       const totalCount = Math.max(userScopedTasks.length, 1);
@@ -2202,7 +2246,6 @@
       document.getElementById('labelPieProg').textContent = `In Progress (${progCount})`;
     }
 
-    // Usage & System Activity Table (Real Time Dynamic Tracking)
     function renderUsageTable() {
       const tbody = document.getElementById('usageTableBody');
       const subtitle = document.getElementById('usageScopeSubtitle');
@@ -2210,7 +2253,7 @@
 
       const visibleUsers = (currentSessionUser.role === 'ADMIN' || currentSessionUser.name === 'Saravanan M')
         ? users
-        : users.filter(u => u.name.toLowerCase() === currentSessionUser.name.toLowerCase());
+        : users.filter(u => u.name.trim().toLowerCase() === currentSessionUser.name.trim().toLowerCase());
 
       if (subtitle) {
         subtitle.textContent = (currentSessionUser.role === 'ADMIN' || currentSessionUser.name === 'Saravanan M')
@@ -2219,7 +2262,7 @@
       }
 
       tbody.innerHTML = visibleUsers.map(u => {
-        const isCurrent = currentSessionUser && u.name === currentSessionUser.name;
+        const isCurrent = currentSessionUser && u.name.trim().toLowerCase() === currentSessionUser.name.trim().toLowerCase();
         const totalSecs = (u.usageSeconds || 0);
         const hrs = (totalSecs / 3600).toFixed(2);
         const mins = Math.floor(totalSecs / 60);
@@ -2232,14 +2275,13 @@
             </td>
             <td class="p-3 text-sub font-sans">${u.role}</td>
             <td class="p-3">${isCurrent ? '<span class="text-emerald-400 font-bold">Active Now</span>' : '<span class="text-sub">Offline</span>'}</td>
-            <td class="p-3 text-sub">${isCurrent ? document.getElementById('sessionDurationDisplay').textContent : '-'}</td>
+            <td class="p-3 text-sub">${isCurrent ? formatSessionDuration(sessionSeconds) : '-'}</td>
             <td class="p-3 text-teal-400 font-bold">${hrs} Hours (${mins} mins)</td>
           </tr>
         `;
       }).join('');
     }
 
-    // IT Security Portal
     function renderITSecurityPortal() {
       const tbody = document.getElementById('itUserTableBody');
       const itBadge = document.getElementById('itResetAlertBadge');
@@ -2299,12 +2341,11 @@
 
     function executePasswordReset(targetName) {
       if (confirm(`Authorize immediate password reset for ${targetName}? Temporary OTP passkey will be generated.`)) {
-        const u = users.find(x => x.name === targetName);
+        const u = users.find(x => x.name.trim().toLowerCase() === targetName.trim().toLowerCase());
         if (u) u.pendingReset = false;
         addActivityLog('PASSWORD_RESET_EXECUTED', `Password reset authorized for ${targetName}`);
         resetAuditLog.unshift({ userName: targetName, timestamp: Date.now() });
 
-        // Complete any pending reset tasks assigned to IT Administrator
         tasks.forEach(t => {
           if (t.title.includes(targetName) && t.category === "IT and Infrastructure" && t.status === "PENDING") {
             t.status = "COMPLETED";
@@ -2347,7 +2388,10 @@
     }
 
     window.addEventListener('beforeunload', () => {
-      if (currentSessionUser) saveState({ skipRender: true });
+      if (currentSessionUser) {
+        localStorage.setItem(STORAGE_KEY_SESSION_SECS, String(sessionSeconds));
+        saveState({ skipRender: true });
+      }
     });
 
     function toggleTheme() {
