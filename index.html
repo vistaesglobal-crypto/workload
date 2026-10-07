@@ -57,6 +57,11 @@
     .inner-box { background-color: var(--bg-inner); border-color: var(--border-color); }
     .text-sub { color: var(--text-muted); }
 
+    select option {
+      background-color: #0f172a !important;
+      color: #f8fafc !important;
+    }
+
     /* Custom Scrollbars */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-base); }
@@ -106,16 +111,15 @@
 <body class="font-sans min-h-screen flex selection:bg-purple-600 selection:text-white overflow-hidden transition-colors duration-200">
 
   <!-- ========================================================================= -->
-  <!-- 0. LOGIN SCREEN WITH ANIMATED WALKING & TALKING ROBOTS -->
+  <!-- 0. LOGIN SCREEN WITH ANIMATED ROBOTS -->
   <!-- ========================================================================= -->
   <div id="loginScreen" class="fixed inset-0 z-50 bg-[#070b14] flex flex-col items-center justify-center p-4 overflow-hidden">
     
-    <!-- Background Animated Robot Walk & Talk Scene -->
     <div class="w-full max-w-4xl h-44 mb-3 relative flex items-center justify-between px-8 pointer-events-none select-none">
       
       <!-- Robot 1: Patrol Walker -->
       <div class="relative animate-robot-patrol flex flex-col items-center">
-        <div id="speechBubble1" class="bg-purple-950/90 text-purple-200 border border-purple-500/60 px-3 py-1 rounded-2xl text-[11px] font-mono font-bold shadow-xl mb-2 whitespace-nowrap">
+        <div id="speechBubble1" class="bg-purple-950/90 text-purple-200 border border-purple-500/60 px-3 py-1 rounded-2xl text-[11px] font-mono font-bold shadow-xl mb-2 whitespace-nowrap transition-all duration-300">
           "Morning Unit 2! Ready for system telemetry?"
         </div>
         <svg viewBox="0 0 180 180" class="w-24 h-24 drop-shadow-[0_10px_20px_rgba(168,85,247,0.3)]">
@@ -132,7 +136,7 @@
 
       <!-- Robot 2: Station Responder -->
       <div class="relative flex flex-col items-center">
-        <div id="speechBubble2" class="bg-teal-950/90 text-teal-200 border border-teal-500/60 px-3 py-1 rounded-2xl text-[11px] font-mono font-bold shadow-xl mb-2 whitespace-nowrap">
+        <div id="speechBubble2" class="bg-teal-950/90 text-teal-200 border border-teal-500/60 px-3 py-1 rounded-2xl text-[11px] font-mono font-bold shadow-xl mb-2 whitespace-nowrap transition-all duration-300">
           "All VISTA operational pipelines nominal @ 100%!"
         </div>
         <svg viewBox="0 0 180 180" class="w-24 h-24 drop-shadow-[0_10px_20px_rgba(45,212,191,0.3)]">
@@ -152,7 +156,6 @@
     <!-- Login Gateway Card -->
     <div class="bg-[#0f172a] border border-slate-800 rounded-3xl p-8 max-w-md w-full shadow-2xl relative z-10">
       
-      <!-- Logo Banner -->
       <div class="flex items-center gap-3 mb-5 bg-white px-4 py-2 rounded-xl w-fit shadow-md">
         <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
           <circle cx="20" cy="20" r="7" fill="#c026d3" />
@@ -180,7 +183,6 @@
         <div>
           <label class="block text-[11px] font-mono uppercase text-slate-400 mb-1">Account Select *</label>
           <select id="loginUserSelect" class="w-full bg-[#090d16] border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
-            <!-- Dynamic Users -->
           </select>
         </div>
 
@@ -207,7 +209,6 @@
   <aside id="sidebar" class="w-64 panel-box border-r flex flex-col justify-between transition-all duration-300 z-30 select-none">
     
     <div>
-      <!-- Corporate Logo -->
       <div class="p-4 border-b border-slate-700/50 flex items-center justify-between">
         <div class="flex items-center gap-2.5 bg-white px-2.5 py-1.5 rounded-xl shadow-md cursor-pointer" onclick="navigateTo('welcome')">
           <svg width="22" height="22" viewBox="0 0 100 100" fill="none">
@@ -257,7 +258,6 @@
           <span id="navWorkloadLabel">Workload Register</span>
         </button>
 
-        <!-- DELEGATED TASKS TRACKER TAB -->
         <button onclick="navigateTo('delegated')" id="nav-delegated" class="nav-item w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-sub hover:text-indigo-400 hover:bg-indigo-950/20 transition">
           <i class="fa-solid fa-diagram-project text-indigo-400 w-4 text-center"></i>
           <span>Delegated Tasks</span>
@@ -281,16 +281,18 @@
           <span id="unreadNotifCountPill" class="hidden bg-red-600 text-white text-[10px] font-mono px-1.5 py-0.2 rounded-full">0</span>
         </button>
 
-        <!-- IT & Admin Specialized Tab -->
+        <!-- IT Security Menu with Dynamic Count -->
         <div id="itAdminNavGroup" class="pt-2 border-t border-slate-700/50">
           <span class="text-[9px] font-mono uppercase text-sub px-3 tracking-wider block mb-1">Security & Access</span>
-          <button onclick="navigateTo('itSecurity')" id="nav-itSecurity" class="nav-item w-full flex items-center gap-3 px-3 py-1.5 rounded-xl text-xs font-semibold text-teal-400 hover:bg-teal-950/30 transition">
-            <i class="fa-solid fa-id-card-clip text-teal-400 w-4 text-center"></i>
-            <span>IT & Password Portal</span>
+          <button onclick="navigateTo('itSecurity')" id="nav-itSecurity" class="nav-item w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-semibold text-teal-400 hover:bg-teal-950/30 transition">
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-id-card-clip text-teal-400 w-4 text-center"></i>
+              <span>IT & Password Portal</span>
+            </div>
+            <span id="itResetAlertBadge" class="hidden bg-red-600 text-white font-mono text-[10px] px-1.5 py-0.2 rounded-full">0</span>
           </button>
         </div>
 
-        <!-- Task Creation Button (Hidden for IT Role) -->
         <div id="assignTaskBtnWrap" class="pt-2">
           <button onclick="openTaskModal()" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-purple-300 bg-purple-950/40 border border-purple-800/60 hover:bg-purple-900/60 transition">
             <i class="fa-solid fa-plus-circle text-purple-400 w-4 text-center"></i>
@@ -316,24 +318,21 @@
   </aside>
 
   <!-- ========================================================================= -->
-  <!-- MAIN WORKSPACE CONTAINER -->
+  <!-- MAIN WORKSPACE -->
   <!-- ========================================================================= -->
   <div class="flex-1 flex flex-col h-screen overflow-hidden">
     
-    <!-- Top Utility Header -->
     <header class="h-14 border-b panel-box px-6 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <span class="text-xs font-mono uppercase text-sub" id="currentViewBreadcrumb">Welcome Portal</span>
       </div>
 
       <div class="flex items-center gap-4">
-        <!-- Live Precision Clock -->
         <div class="flex items-center gap-2 inner-box px-3 py-1 rounded-lg border">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span id="liveSecClock" class="font-mono text-xs text-teal-400 font-bold">00:00:00</span>
         </div>
 
-        <!-- Session Duration -->
         <div class="hidden sm:flex items-center gap-1.5 inner-box px-3 py-1 rounded-lg border text-xs font-mono text-sub">
           <i class="fa-regular fa-clock text-purple-400 text-[11px]"></i>
           <span>Session: <strong id="sessionDurationDisplay" class="text-main">00m 00s</strong></span>
@@ -341,12 +340,9 @@
       </div>
     </header>
 
-    <!-- Scrollable Workspace -->
     <main class="flex-1 overflow-y-auto p-6" id="mainWorkspace">
 
-      <!-- ========================================================================= -->
       <!-- VIEW 1: WELCOME PORTAL -->
-      <!-- ========================================================================= -->
       <section id="view-welcome" class="view-panel space-y-8 max-w-5xl mx-auto py-6">
         
         <div class="flex flex-col items-center justify-center text-center">
@@ -435,9 +431,7 @@
 
       </section>
 
-      <!-- ========================================================================= -->
       <!-- VIEW 2: OPERATIONS DASHBOARD -->
-      <!-- ========================================================================= -->
       <section id="view-dashboard" class="view-panel hidden space-y-6">
         
         <div class="bg-gradient-to-r from-purple-900 via-indigo-950 to-slate-900 border border-purple-800/60 rounded-2xl p-5 shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 text-white">
@@ -506,7 +500,7 @@
               <i class="fa-solid fa-table-cells text-purple-400 mr-2"></i> 
               <span id="matrixHeaderTitle">Employee Performance Matrix</span>
             </h3>
-            <span class="text-[10px] font-mono text-sub">Target $\ge 80\%$ for Green</span>
+            <span class="text-[10px] font-mono text-sub">Target ≥ 80% for Green</span>
           </div>
 
           <div class="overflow-x-auto">
@@ -534,22 +528,20 @@
 
       </section>
 
-      <!-- ========================================================================= -->
-      <!-- VIEW 3: WORKLOAD EXECUTION REGISTER (Showing Assigned Date + Exact Time) -->
-      <!-- ========================================================================= -->
+      <!-- VIEW 3: WORKLOAD REGISTER -->
       <section id="view-workload" class="view-panel hidden space-y-4">
         
         <div class="flex flex-wrap items-center justify-between gap-3 card-box p-4 rounded-xl border">
           <div class="flex items-center gap-3">
             <h2 class="text-base font-bold">Workload Execution Register</h2>
             <span id="activeFilterBadge" class="text-xs bg-purple-950 text-purple-300 border border-purple-800 px-2.5 py-0.5 rounded-full font-mono">
-              My Execution Tasks
+              All Assigned Tasks
             </span>
           </div>
 
           <div class="flex items-center gap-2">
-            <button onclick="clearWorkloadFilters()" class="text-xs px-3 py-1.5 rounded-lg inner-box border hover:bg-slate-700 text-sub">
-              Clear Filters
+            <button onclick="clearWorkloadFilters()" class="text-xs px-3 py-1.5 rounded-lg inner-box border hover:bg-slate-700 text-sub transition">
+              <i class="fa-solid fa-list-ul mr-1"></i> View All (<span id="workloadAllCount">0</span> Tasks)
             </button>
           </div>
         </div>
@@ -567,7 +559,7 @@
                   <th class="p-3 border-r border-slate-700/50">Task Title & Category</th>
                   <th class="p-3 border-r border-slate-700/50">Status</th>
                   <th class="p-3 border-r border-slate-700/50 text-center">Target Deadline</th>
-                  <th class="p-3 border-r border-slate-700/50 text-center bg-purple-950/20">Precision Countdown / Closure Time</th>
+                  <th class="p-3 border-r border-slate-700/50 text-center bg-purple-950/20">Countdown / Closure Time</th>
                   <th class="p-3 border-r border-slate-700/50">Proof of Completion (Photo)</th>
                   <th class="p-3 border-r border-slate-700/50 text-center">Comments</th>
                   <th class="p-3 text-center">Actions</th>
@@ -580,9 +572,7 @@
 
       </section>
 
-      <!-- ========================================================================= -->
       <!-- VIEW 3B: DELEGATED TASKS TRACKER -->
-      <!-- ========================================================================= -->
       <section id="view-delegated" class="view-panel hidden space-y-4">
         
         <div class="card-box p-4 rounded-xl border flex flex-wrap items-center justify-between gap-3">
@@ -607,7 +597,7 @@
                   <th class="p-3 border-r border-slate-700/50">Task Details</th>
                   <th class="p-3 border-r border-slate-700/50">Live Execution Status</th>
                   <th class="p-3 border-r border-slate-700/50 text-center">Target Deadline</th>
-                  <th class="p-3 border-r border-slate-700/50 text-center">Precision Countdown / Closure Time</th>
+                  <th class="p-3 border-r border-slate-700/50 text-center">Countdown / Closure Time</th>
                   <th class="p-3 border-r border-slate-700/50">Uploaded Proof (Photo)</th>
                   <th class="p-3 text-center">Comments Log</th>
                 </tr>
@@ -619,9 +609,7 @@
 
       </section>
 
-      <!-- ========================================================================= -->
       <!-- VIEW 4: VISUAL CURVES & METRICS -->
-      <!-- ========================================================================= -->
       <section id="view-curves" class="view-panel hidden space-y-6">
         
         <div class="card-box border rounded-2xl p-6 shadow-2xl">
@@ -676,16 +664,14 @@
 
       </section>
 
-      <!-- ========================================================================= -->
-      <!-- VIEW 5: TASK MESSAGE BOX WITH SL.NO -->
-      <!-- ========================================================================= -->
+      <!-- VIEW 5: TASK MESSAGE BOX -->
       <section id="view-messages" class="view-panel hidden space-y-4">
         
         <div class="card-box border rounded-2xl p-5 shadow-2xl">
           <div class="flex items-center justify-between pb-4 border-b">
             <div>
               <h2 class="text-base font-bold">Task Assignment Activity & Messages</h2>
-              <p class="text-xs text-sub">Row-by-row dispatch notifications with Sl.No. Click any notification to navigate directly to the task.</p>
+              <p class="text-xs text-sub">Inbox notifications, task assignments, and IT system password reset dispatches.</p>
             </div>
             <span id="unreadMessagesHeaderBadge" class="text-xs font-mono bg-purple-950 text-purple-300 border border-purple-800 px-3 py-1 rounded-full">
               0 Unread
@@ -693,24 +679,21 @@
           </div>
 
           <div id="messagesListContainer" class="divide-y divide-slate-700/50 mt-2">
-            <!-- Messages populated by JS -->
           </div>
         </div>
 
       </section>
 
-      <!-- ========================================================================= -->
-      <!-- VIEW 6: USAGE & ACTIVITY (Strictly Self-Time Only for Employees) -->
-      <!-- ========================================================================= -->
+      <!-- VIEW 6: USAGE & ACTIVITY (REAL SYSTEM TRACKER) -->
       <section id="view-usage" class="view-panel hidden space-y-6">
         
         <div class="card-box border rounded-2xl p-6 shadow-2xl">
           <div class="flex items-center justify-between mb-4">
             <div>
               <h2 class="text-lg font-bold">Usage & System Activity Logs</h2>
-              <p id="usageScopeSubtitle" class="text-xs text-sub">Personal active session metrics tracked on the platform.</p>
+              <p id="usageScopeSubtitle" class="text-xs text-sub">Persistent activity and usage metrics for this browser session/data store.</p>
             </div>
-            <span class="text-xs font-mono text-teal-400 bg-teal-950 border border-teal-800 px-3 py-1 rounded-lg">Real-Time Tracker</span>
+            <span class="text-xs font-mono text-teal-400 bg-teal-950 border border-teal-800 px-3 py-1 rounded-lg">Real-Time Active</span>
           </div>
 
           <div class="overflow-x-auto">
@@ -729,11 +712,33 @@
           </div>
         </div>
 
+        <div class="card-box border rounded-2xl overflow-hidden shadow-2xl">
+          <div class="px-5 py-4 panel-box border-b flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-bold"><i class="fa-solid fa-list-check text-purple-400 mr-2"></i>System Activity Log</h3>
+              <p class="text-[10px] text-sub mt-1">Persistent audit events generated by real user actions, navigation, task updates and security actions.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span id="activityLogCount" class="text-[10px] font-mono text-teal-400">0 events</span>
+              <button onclick="renderActivityLog(); renderUsageTable();" class="text-[10px] px-2.5 py-1 rounded-lg inner-box border text-sub">Refresh</button>
+              <button onclick="clearActivityLog()" class="text-[10px] px-2.5 py-1 rounded-lg bg-red-950/40 text-red-300 border border-red-800/60">Clear Log</button>
+            </div>
+          </div>
+          <div class="overflow-x-auto max-h-[420px] overflow-y-auto">
+            <table class="w-full text-xs text-left border-collapse">
+              <thead class="sticky top-0 inner-box">
+                <tr class="text-sub uppercase font-mono border-b">
+                  <th class="p-3">Timestamp</th><th class="p-3">Actor</th><th class="p-3">Action</th><th class="p-3">Details</th><th class="p-3">Level</th>
+                </tr>
+              </thead>
+              <tbody id="activityLogBody" class="divide-y divide-slate-700/50"></tbody>
+            </table>
+          </div>
+        </div>
+
       </section>
 
-      <!-- ========================================================================= -->
       <!-- VIEW 7: IT & PASSWORD SECURITY PORTAL -->
-      <!-- ========================================================================= -->
       <section id="view-itSecurity" class="view-panel hidden space-y-6">
         
         <div class="card-box border rounded-2xl p-6 shadow-2xl">
@@ -741,7 +746,7 @@
             <div>
               <span class="text-[10px] font-mono uppercase text-teal-400 tracking-wider">Access Control Center</span>
               <h2 class="text-xl font-black">IT User Administration & Password Reset Portal</h2>
-              <p class="text-xs text-sub">Authorized for IT Administrators & Executive Admin (Saravanan M).</p>
+              <p class="text-xs text-sub">Authorized for IT Administrators & Executive Admin.</p>
             </div>
             <button onclick="openUserModal()" class="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-bold transition shadow-lg">
               <i class="fa-solid fa-user-plus mr-1.5"></i> Provision New ID
@@ -793,9 +798,7 @@
     </main>
   </div>
 
-  <!-- ========================================================================= -->
-  <!-- MODAL: COMMENTS (Pending & In-Flight Tasks) -->
-  <!-- ========================================================================= -->
+  <!-- MODAL: COMMENTS -->
   <div id="modalComments" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="card-box border rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
       <div class="px-5 py-4 panel-box border-b flex justify-between items-center">
@@ -825,9 +828,7 @@
     </div>
   </div>
 
-  <!-- ========================================================================= -->
-  <!-- MODAL: ASSIGN TASK (Streamlined for All Users) -->
-  <!-- ========================================================================= -->
+  <!-- MODAL: ASSIGN TASK -->
   <div id="modalTask" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="card-box border rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl">
       <div class="px-5 py-4 panel-box border-b flex justify-between items-center">
@@ -837,59 +838,89 @@
         <button onclick="closeTaskModal()" class="text-sub hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <form onsubmit="handleCreateTask(event)" class="p-5 space-y-3.5">
+      <div class="p-5 space-y-3.5">
         <div>
           <label class="block text-[11px] font-mono uppercase text-sub mb-1">Task Title *</label>
-          <input type="text" id="taskTitleInput" required placeholder="e.g. PLC Automation Logic Verification" class="w-full inner-box border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-purple-500" />
+          <input type="text" id="taskTitleInput" placeholder="e.g. Complete the given work" class="w-full bg-[#090d16] text-white border border-slate-700 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-purple-500" />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-[11px] font-mono uppercase text-sub mb-1">Category *</label>
-            <select id="taskCategorySelect" class="w-full inner-box border rounded-xl px-3 py-2 text-xs">
-              <option>Operations</option>
-              <option>Recruitment</option>
-              <option>HR and Admin</option>
-              <option>Admin</option>
-              <option>Compliance</option>
-              <option>Project Management</option>
-              <option>IT and Infrastructure</option>
-              <option>Graphic Design</option>
-              <option>Software Development</option>
-              <option>Others</option>
+            <select id="taskCategorySelect" class="w-full bg-[#090d16] text-white border border-slate-700 rounded-xl px-3 py-2 text-xs focus:outline-none">
+              <option value="Operations">Operations</option>
+              <option value="Recruitment">Recruitment</option>
+              <option value="HR and Admin">HR and Admin</option>
+              <option value="Admin">Admin</option>
+              <option value="Compliance">Compliance</option>
+              <option value="Project Management">Project Management</option>
+              <option value="IT and Infrastructure">IT and Infrastructure</option>
+              <option value="Graphic Design">Graphic Design</option>
+              <option value="Software Development">Software Development</option>
+              <option value="Others">Others</option>
             </select>
           </div>
           <div>
             <label class="block text-[11px] font-mono uppercase text-sub mb-1">Assigned To *</label>
-            <select id="taskAssignedSelect" class="w-full inner-box border rounded-xl px-3 py-2 text-xs"></select>
+            <select id="taskAssignedSelect" class="w-full bg-[#090d16] text-white border border-slate-700 rounded-xl px-3 py-2 text-xs focus:outline-none"></select>
           </div>
         </div>
 
-        <!-- TARGET DEADLINE -->
         <div>
           <label class="block text-[11px] font-mono uppercase text-sub mb-1">
-            Target Deadline (Visual Calendar) *
+            Target Deadline (Visual Calendar & Clock Selector) *
           </label>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div class="relative">
               <input 
                 type="date" 
                 id="taskTargetDate" 
-                required 
                 onclick="this.showPicker && this.showPicker()"
-                class="w-full inner-box border rounded-xl px-3 py-2.5 text-xs font-mono cursor-pointer focus:outline-none focus:border-purple-500" 
+                class="w-full bg-[#090d16] text-white border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono cursor-pointer focus:outline-none focus:border-purple-500" 
               />
-              <button type="button" onclick="document.getElementById('taskTargetDate').showPicker()" class="absolute right-3 top-2.5 text-purple-400">
+              <button type="button" onclick="document.getElementById('taskTargetDate').showPicker()" class="absolute right-3 top-2 text-purple-400">
                 <i class="fa-regular fa-calendar-days"></i>
               </button>
             </div>
-            <div>
-              <input 
-                type="time" 
-                id="taskTargetTime" 
-                required 
-                class="w-full inner-box border rounded-xl px-3 py-2.5 text-xs font-mono focus:outline-none focus:border-purple-500" 
-              />
+
+            <div class="flex items-center gap-1.5 bg-[#090d16] border border-slate-700 rounded-xl px-2.5 py-1.5">
+              <i class="fa-regular fa-clock text-purple-400 text-xs mr-1"></i>
+              
+              <select id="taskClockHour" class="bg-[#0f172a] text-white border border-slate-700 rounded px-1 py-0.5 text-xs font-mono font-bold focus:outline-none cursor-pointer">
+                <option value="01">01</option>
+                <option value="02">02</option>
+                <option value="03">03</option>
+                <option value="04">04</option>
+                <option value="05">05</option>
+                <option value="06" selected>06</option>
+                <option value="07">07</option>
+                <option value="08">08</option>
+                <option value="09">09</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+              </select>
+              <span class="font-bold text-xs text-purple-400">:</span>
+              
+              <select id="taskClockMinute" class="bg-[#0f172a] text-white border border-slate-700 rounded px-1 py-0.5 text-xs font-mono font-bold focus:outline-none cursor-pointer">
+                <option value="00" selected>00</option>
+                <option value="05">05</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="30">30</option>
+                <option value="35">35</option>
+                <option value="40">40</option>
+                <option value="45">45</option>
+                <option value="50">50</option>
+                <option value="55">55</option>
+              </select>
+
+              <select id="taskClockPeriod" class="bg-purple-950 text-purple-200 border border-purple-800 rounded px-1.5 py-0.5 text-xs font-mono font-bold focus:outline-none cursor-pointer ml-auto">
+                <option value="AM">AM</option>
+                <option value="PM" selected>PM</option>
+              </select>
             </div>
           </div>
         </div>
@@ -901,15 +932,13 @@
 
         <div class="pt-3 border-t flex justify-end gap-2">
           <button type="button" onclick="closeTaskModal()" class="px-3.5 py-1.5 inner-box text-sub rounded-xl text-xs">Cancel</button>
-          <button type="submit" class="px-4 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold">Publish & Dispatch</button>
+          <button type="button" onclick="handleCreateTaskManual()" class="px-4 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold shadow-lg transition">Publish & Dispatch</button>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 
-  <!-- ========================================================================= -->
-  <!-- MODAL: MANDATORY PHOTO PROOF COMPLETION -->
-  <!-- ========================================================================= -->
+  <!-- MODAL: PROOF OF COMPLETION -->
   <div id="modalProof" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="card-box border rounded-2xl w-full max-w-md p-6 shadow-2xl">
       <div class="flex justify-between items-center pb-3 border-b">
@@ -921,7 +950,7 @@
 
       <div class="py-4 space-y-3">
         <p class="text-xs text-sub">
-          Upload photo evidence to complete this task. Once completed and closed, <strong>it is permanently locked and cannot be changed</strong>.
+          Upload photo evidence to complete this task. Once completed, it remains locked and recorded in the register.
         </p>
 
         <div class="border-2 border-dashed border-slate-700/60 hover:border-teal-500 rounded-xl p-5 text-center inner-box">
@@ -948,9 +977,7 @@
     </div>
   </div>
 
-  <!-- ========================================================================= -->
   <!-- MODAL: PROVISION USER -->
-  <!-- ========================================================================= -->
   <div id="modalUser" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="card-box border rounded-2xl w-full max-w-sm p-5 shadow-2xl">
       <div class="flex justify-between items-center pb-3 border-b">
@@ -979,12 +1006,15 @@
     </div>
   </div>
 
-  <!-- ========================================================================= -->
-  <!-- JAVASCRIPT STATE ENGINE & LOCALSTORAGE RESILIENCE -->
-  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT STATE ENGINE -->
   <script>
-    const STORAGE_KEY_DB = 'VISTA_OPS_DB_V5';
-    const STORAGE_KEY_SESSION = 'VISTA_ACTIVE_USER_NAME_V5';
+    const STORAGE_KEY_DB = 'VISTA_OPS_DB_V7';
+    const STORAGE_KEY_SESSION = 'VISTA_ACTIVE_USER_NAME_V6';
+    const STORAGE_KEY_SESSION_SECS = 'VISTA_SESSION_SECS_V6';
+    const STORAGE_KEY_VIEW = 'VISTA_CURRENT_VIEW_V6';
+    const STORAGE_KEY_THEME = 'VISTA_THEME_V6';
+    const STORAGE_KEY_LAST_ACTIVITY = 'VISTA_LAST_ACTIVITY_V7';
+    const MAX_ACTIVITY_LOGS = 500;
 
     const INITIAL_ROSTER = [
       { id: "USR-01", name: "Saravanan M", role: "ADMIN", email: "saravanan@vistaengg.com", usageSeconds: 14200, resetCount: 0, pendingReset: false },
@@ -997,105 +1027,85 @@
       { id: "USR-08", name: "Magesh kumar S", role: "EMPLOYEE", email: "magesh@vistaengg.com", usageSeconds: 4300, resetCount: 1, pendingReset: false }
     ];
 
-    const INITIAL_TASKS = [
-      {
-        id: "tsk-01",
-        serial_no: 1,
+    // Seed tasks with Mohan's 12 tasks to reflect the matrix count accurately
+    function generateInitialTasks() {
+      const taskTitles = [
+        "PLC Automation Logic Verification",
+        "HVAC Duct Layout FEM Simulation",
+        "TISAX Data Security Compliance Review",
+        "ADE Bengaluru Hardware Deliverables Validation",
+        "CAN-Bus Telemetry Gateway Verification",
+        "High-Speed Spindle Thermal Analysis",
+        "BOM Extraction for Project Aero",
+        "Hydraulic Valve Calibrations",
+        "Quality Inspection for Stamping Mold",
+        "Safety Relay Circuit Verification",
+        "Motor Controller Firmware Flashing",
+        "Visitor Management Database Tuning"
+      ];
+
+      return taskTitles.map((t, idx) => ({
+        id: "tsk-" + (idx + 1),
+        serial_no: idx + 1,
         cw: 40,
-        title: "PLC Automation Logic Verification",
-        category: "Operations",
+        title: t,
+        category: idx % 2 === 0 ? "Operations" : "Software Development",
         requester: "Saravanan M",
         assigned_to: "Mohan",
-        status: "COMPLETED",
-        assigned_at: "2026-09-29T10:00:00",
-        target_deadline: "2026-09-30T14:48:00",
-        actual_completed_at: "2026-09-30T15:15:00",
-        closure_note: "Closed: 9/30/2026, 03:15 PM",
-        proof_image: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='40'><rect width='100' height='40' fill='%2310b981'/><text x='10' y='25' fill='white' font-size='10'>PLC VERIFIED</text></svg>",
-        description: "Verify ladder logic on station 3.",
-        comments: [{ author: "Mohan", text: "Calibration done on switch 2.", time: "9/29/2026, 02:00 PM" }]
-      },
-      {
-        id: "tsk-02",
-        serial_no: 2,
-        cw: 40,
-        title: "BOM Extraction for Project Aero",
-        category: "Project Management",
-        requester: "Magesh kumar S",
-        assigned_to: "Keerthivasan",
-        status: "DEPENDENCY_ON_HOLD",
-        assigned_at: "2026-09-29T11:00:00",
-        target_deadline: "2026-10-02T18:00:00",
-        actual_completed_at: null,
-        closure_note: null,
-        proof_image: null,
-        description: "Waiting for external supplier quote validation.",
-        comments: [{ author: "Keerthivasan", text: "Waiting for vendor pricing catalog.", time: "9/29/2026, 03:30 PM" }]
-      },
-      {
-        id: "tsk-03",
-        serial_no: 3,
-        cw: 40,
-        title: "HVAC Duct Layout FEM Simulation",
-        category: "Software Development",
-        requester: "Pradeepa",
-        assigned_to: "Naveen Kumar",
-        status: "ON_PROGRESS",
-        assigned_at: "2026-09-28T09:30:00",
-        target_deadline: "2026-09-30T11:00:00",
-        actual_completed_at: null,
-        closure_note: null,
-        proof_image: null,
-        description: "Mesh convergence checks on ventilation system.",
+        status: idx === 0 ? "COMPLETED" : "PENDING",
+        assigned_at: new Date(Date.now() - (idx + 1) * 3600000 * 5).toISOString(),
+        target_deadline: new Date(Date.now() + (idx + 1) * 86400000).toISOString(),
+        actual_completed_at: idx === 0 ? new Date().toISOString() : null,
+        closure_note: idx === 0 ? "Closed: Verification complete" : null,
+        proof_image: idx === 0 ? "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='40'><rect width='100' height='40' fill='%2310b981'/><text x='10' y='25' fill='white' font-size='10'>VERIFIED</text></svg>" : null,
+        description: "Standard operational delivery workflow item.",
         comments: []
-      }
-    ];
+      }));
+    }
 
     const INITIAL_NOTIFICATIONS = [
       {
         id: "ntf-1",
-        taskId: "tsk-01",
+        taskId: "tsk-1",
         sender: "Saravanan M",
         recipient: "Mohan",
         taskTitle: "PLC Automation Logic Verification",
-        time: "9/29/2026, 10:00 AM",
+        time: "10/05/2026, 10:00 AM",
         read: true
       },
       {
         id: "ntf-2",
-        taskId: "tsk-03",
-        sender: "Pradeepa",
-        recipient: "Naveen Kumar",
+        taskId: "tsk-2",
+        sender: "Saravanan M",
+        recipient: "Mohan",
         taskTitle: "HVAC Duct Layout FEM Simulation",
-        time: "9/28/2026, 09:30 AM",
+        time: "10/06/2026, 09:30 AM",
         read: false
       }
     ];
 
-    // Load Database with Safe Parser
     function loadPersistedState() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY_DB);
+        const raw = localStorage.getItem(STORAGE_KEY_DB) || localStorage.getItem('VISTA_OPS_DB_V6');
         if (raw) {
           const parsed = JSON.parse(raw);
           return {
             users: parsed.users || INITIAL_ROSTER,
-            tasks: parsed.tasks || INITIAL_TASKS,
-            notifications: parsed.notifications || INITIAL_NOTIFICATIONS,
-            resetAuditLog: parsed.resetAuditLog || []
+            tasks: (parsed.tasks && parsed.tasks.length > 0) ? parsed.tasks : generateInitialTasks(),
+            notifications: Array.isArray(parsed.notifications) ? parsed.notifications : INITIAL_NOTIFICATIONS,
+            resetAuditLog: Array.isArray(parsed.resetAuditLog) ? parsed.resetAuditLog : [],
+            activityLog: Array.isArray(parsed.activityLog) ? parsed.activityLog : []
           };
         }
       } catch (e) {
-        console.warn("Storage hydration fallback invoked:", e);
+        console.warn("Hydration fallback:", e);
       }
       return {
         users: INITIAL_ROSTER,
-        tasks: INITIAL_TASKS,
+        tasks: generateInitialTasks(),
         notifications: INITIAL_NOTIFICATIONS,
-        resetAuditLog: [
-          { userName: "Mohan", timestamp: Date.now() - 3600000 * 2 },
-          { userName: "Pradeepa", timestamp: Date.now() - 86400000 * 3 }
-        ]
+        resetAuditLog: [{ userName: "Mohan", timestamp: Date.now() - 3600000 }],
+        activityLog: []
       };
     }
 
@@ -1104,25 +1114,46 @@
     let tasks = appState.tasks;
     let taskNotifications = appState.notifications;
     let resetAuditLog = appState.resetAuditLog;
+    let activityLog = appState.activityLog || [];
     let currentSessionUser = null;
     
-    let sessionSeconds = 0;
+    let sessionSeconds = parseInt(localStorage.getItem(STORAGE_KEY_SESSION_SECS) || '0', 10);
     let activeFilter = 'ALL';
     let pendingProofTaskId = null;
     let tempProofUrl = null;
     let activeCommentTaskId = null;
+    normalizeLoadedState();
 
-    // 2. Lifecycle
+    function initTheme() {
+      const savedTheme = localStorage.getItem(STORAGE_KEY_THEME) || 'dark';
+      const htmlEl = document.documentElement;
+      const themeLabel = document.getElementById('themeLabel');
+      const themeIcon = document.getElementById('themeIcon');
+      if (savedTheme === 'light') {
+        htmlEl.classList.remove('dark');
+        if (themeLabel) themeLabel.textContent = "Light";
+        if (themeIcon) themeIcon.className = "fa-solid fa-sun text-amber-500";
+      } else {
+        htmlEl.classList.add('dark');
+        if (themeLabel) themeLabel.textContent = "Dark";
+        if (themeIcon) themeIcon.className = "fa-solid fa-moon text-purple-400";
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
+      initTheme();
       populateLoginDropdown();
-      populateFormDropdowns();
 
-      // Reliable Session Recovery by Username
       const savedUserName = localStorage.getItem(STORAGE_KEY_SESSION);
+      const savedView = localStorage.getItem(STORAGE_KEY_VIEW) || 'welcome';
+
       if (savedUserName) {
         const matchedUser = users.find(u => u.name === savedUserName);
         if (matchedUser) {
           authenticateUser(matchedUser, false);
+          navigateTo(savedView);
+          addActivityLog('SESSION_RESTORED', `Restored view: ${savedView}`);
+          saveState({ skipRender: true });
         } else {
           document.getElementById('loginScreen').classList.remove('hidden');
         }
@@ -1130,69 +1161,157 @@
         document.getElementById('loginScreen').classList.remove('hidden');
       }
 
-      // Robot Walk Dialogue
+      // Robot quotes
       const phrases1 = [
         "Morning Unit 2! Ready for system telemetry?",
         "Auditing task queues for Saravanan M...",
-        "Live velocity looking strong today!"
+        "Live velocity looking strong today!",
+        "Workload register synchronized @ 100%!"
       ];
       const phrases2 = [
         "All VISTA operational pipelines nominal @ 100%!",
         "Zero packet drops detected in central register.",
-        "Photo proof verification algorithms active."
+        "Photo proof verification algorithms active.",
+        "Security passkeys encrypted & verified."
       ];
       let pIdx = 0;
       setInterval(() => {
         pIdx = (pIdx + 1) % phrases1.length;
         const b1 = document.getElementById('speechBubble1');
         const b2 = document.getElementById('speechBubble2');
-        if (b1) b1.textContent = phrases1[pIdx];
-        if (b2) b2.textContent = phrases2[pIdx];
+        if (b1) b1.textContent = `"${phrases1[pIdx]}"`;
+        if (b2) b2.textContent = `"${phrases2[pIdx]}"`;
       }, 4000);
 
-      // Precision Clock & Session Counter (Every 1s)
+      // Real-time Session & Platform Usage Counter (Every 1s)
       setInterval(() => {
-        const now = new Date();
-        document.getElementById('liveSecClock').textContent = now.toLocaleTimeString();
+        const currentNow = new Date();
+        document.getElementById('liveSecClock').textContent = currentNow.toLocaleTimeString();
         if (currentSessionUser) {
           sessionSeconds++;
+          localStorage.setItem(STORAGE_KEY_SESSION_SECS, sessionSeconds);
+
+          // Update user's real cumulative time in memory
+          const userObj = users.find(u => u.name === currentSessionUser.name);
+          if (userObj) {
+            userObj.usageSeconds = (userObj.usageSeconds || 0) + 1;
+          }
+          if (sessionSeconds % 10 === 0) saveState({ skipRender: true });
+
           const m = Math.floor(sessionSeconds / 60);
           const s = sessionSeconds % 60;
           const displayStr = `${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`;
           document.getElementById('sessionDurationDisplay').textContent = displayStr;
-          document.getElementById('heroSessionTime').textContent = displayStr;
+          const heroEl = document.getElementById('heroSessionTime');
+          if (heroEl) heroEl.textContent = displayStr;
         }
         updateDynamicTimers();
       }, 1000);
     });
 
-    // Safe State Persistence (Quota Exceeded Proof)
-    function saveState() {
+    function addActivityLog(action, details = '', level = 'INFO') {
+      const actor = currentSessionUser ? currentSessionUser.name : 'System';
+      activityLog.unshift({
+        id: `act-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,
+        timestamp: new Date().toISOString(),
+        actor,
+        role: currentSessionUser ? currentSessionUser.role : 'SYSTEM',
+        action,
+        details,
+        level
+      });
+      if (activityLog.length > MAX_ACTIVITY_LOGS) activityLog = activityLog.slice(0, MAX_ACTIVITY_LOGS);
+      localStorage.setItem(STORAGE_KEY_LAST_ACTIVITY, JSON.stringify(activityLog.slice(0, 25)));
+    }
+
+    function saveState(options = {}) {
       try {
         const payload = {
-          users: users,
-          tasks: tasks,
+          users,
+          tasks,
           notifications: taskNotifications,
-          resetAuditLog: resetAuditLog
+          resetAuditLog,
+          activityLog
         };
         localStorage.setItem(STORAGE_KEY_DB, JSON.stringify(payload));
         if (currentSessionUser) {
           localStorage.setItem(STORAGE_KEY_SESSION, currentSessionUser.name);
+          localStorage.setItem(STORAGE_KEY_SESSION_SECS, String(sessionSeconds));
         }
+        if (!options.skipRender) {
+          renderDashboardMatrix();
+          renderWorkload();
+          renderDelegatedTasks();
+          renderMessagesList();
+          renderUsageTable();
+          renderVisualCurves();
+          renderITSecurityPortal();
+          renderActivityLog();
+        }
+        return true;
       } catch (err) {
-        console.error("Storage save issue (mitigated):", err);
+        console.error('Storage save issue:', err);
+        alert('The change could not be saved. Browser storage may be full. Please clear old VISTA Operations data and try again.');
+        return false;
       }
-      
-      renderDashboardMatrix();
-      renderWorkload();
-      renderDelegatedTasks();
-      renderMessagesList();
-      renderUsageTable();
-      renderVisualCurves();
-      renderITSecurityPortal();
     }
 
-    // 3. Authentication & Role Permissions
+    function normalizeLoadedState() {
+      users = Array.isArray(users) ? users : [...INITIAL_ROSTER];
+      tasks = Array.isArray(tasks) ? tasks : generateInitialTasks();
+      taskNotifications = Array.isArray(taskNotifications) ? taskNotifications : [...INITIAL_NOTIFICATIONS];
+      resetAuditLog = Array.isArray(resetAuditLog) ? resetAuditLog : [];
+      activityLog = Array.isArray(activityLog) ? activityLog : [];
+      tasks = tasks.map((t, i) => ({
+        id: t.id || `tsk-${Date.now()}-${i}`,
+        serial_no: i + 1,
+        cw: Number(t.cw) || 40,
+        title: t.title || 'Untitled Operational Task',
+        category: t.category || 'Operations',
+        requester: t.requester || 'System',
+        assigned_to: t.assigned_to || 'Mohan',
+        status: t.status || 'PENDING',
+        assigned_at: t.assigned_at || new Date().toISOString(),
+        target_deadline: t.target_deadline || new Date(Date.now() + 86400000).toISOString(),
+        actual_completed_at: t.actual_completed_at || null,
+        closure_note: t.closure_note || null,
+        proof_image: t.proof_image || null,
+        description: t.description || '',
+        comments: Array.isArray(t.comments) ? t.comments : []
+      }));
+      users.forEach(u => {
+        u.usageSeconds = Number(u.usageSeconds) || 0;
+        u.resetCount = Number(u.resetCount) || 0;
+        u.pendingReset = Boolean(u.pendingReset);
+      });
+    }
+
+    function renderActivityLog() {
+      const tbody = document.getElementById('activityLogBody');
+      const countEl = document.getElementById('activityLogCount');
+      if (!tbody || !currentSessionUser) return;
+      const isAdmin = currentSessionUser.role === 'ADMIN' || currentSessionUser.role === 'IT';
+      const rows = isAdmin ? activityLog : activityLog.filter(x => x.actor.toLowerCase() === currentSessionUser.name.toLowerCase());
+      if (countEl) countEl.textContent = `${rows.length} events`;
+      tbody.innerHTML = rows.slice(0, 100).map((x, i) => `
+        <tr class="hover:bg-purple-950/20 transition">
+          <td class="p-3 font-mono text-sub whitespace-nowrap">${new Date(x.timestamp).toLocaleString()}</td>
+          <td class="p-3 font-bold">${x.actor}</td>
+          <td class="p-3 text-purple-400 font-mono">${x.action}</td>
+          <td class="p-3 text-sub">${x.details || '-'}</td>
+          <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-mono ${x.level === 'ERROR' ? 'bg-red-950 text-red-300' : x.level === 'WARN' ? 'bg-amber-950 text-amber-300' : 'bg-emerald-950 text-emerald-300'}">${x.level}</span></td>
+        </tr>`).join('') || `<tr><td colspan="5" class="p-8 text-center text-sub">No activity recorded yet.</td></tr>`;
+    }
+
+    function clearActivityLog() {
+      if (!currentSessionUser || !['ADMIN','IT'].includes(currentSessionUser.role)) return;
+      if (!confirm('Clear the system activity log? Task and user data will not be deleted.')) return;
+      activityLog = [];
+      addActivityLog('ACTIVITY_LOG_CLEARED', 'Administrator cleared the activity history', 'WARN');
+      saveState();
+    }
+
+
     function populateLoginDropdown() {
       const select = document.getElementById('loginUserSelect');
       select.innerHTML = users.map(u => `<option value="${u.name}">${u.name} (${u.role})</option>`).join('');
@@ -1202,12 +1321,14 @@
       e.preventDefault();
       const selectedName = document.getElementById('loginUserSelect').value;
       const userObj = users.find(u => u.name === selectedName);
+      sessionSeconds = 0;
+      localStorage.setItem(STORAGE_KEY_SESSION_SECS, '0');
       authenticateUser(userObj, true);
     }
 
     function authenticateUser(userObj, switchView = true) {
       currentSessionUser = userObj;
-      sessionSeconds = 0;
+      addActivityLog('LOGIN', 'Authenticated and opened the operations workspace');
       localStorage.setItem(STORAGE_KEY_SESSION, currentSessionUser.name);
 
       document.getElementById('loginScreen').classList.add('hidden');
@@ -1216,7 +1337,8 @@
       document.getElementById('userAvatarText').textContent = currentSessionUser.name.charAt(0);
       document.getElementById('welcomeUserNameHero').textContent = currentSessionUser.name;
 
-      // RULE: IT Administrator CANNOT assign tasks!
+      populateFormDropdowns();
+
       const assignBtnWrap = document.getElementById('assignTaskBtnWrap');
       if (currentSessionUser.role === 'IT') {
         assignBtnWrap.classList.add('hidden');
@@ -1224,7 +1346,6 @@
         assignBtnWrap.classList.remove('hidden');
       }
 
-      // IT & Admin Security Tab
       if (currentSessionUser.role === 'ADMIN' || currentSessionUser.role === 'IT' || currentSessionUser.name === 'Saravanan M') {
         document.getElementById('itAdminNavGroup').classList.remove('hidden');
       } else {
@@ -1236,7 +1357,7 @@
       if (hour >= 12 && hour < 17) greet = "Good Afternoon";
       else if (hour >= 17) greet = "Good Evening";
       document.getElementById('welcomeGreeting').textContent = greet;
-      document.getElementById('robotSpeechBubble').textContent = `👋 Hi ${currentSessionUser.name}! All systems operational.`;
+      document.getElementById('robotSpeechBubble').textContent = `👋 Hi ${currentSessionUser.name}! Operations ready.`;
 
       if (currentSessionUser.role === 'ADMIN') {
         document.getElementById('navDashboardLabel').textContent = 'Operations Matrix (Master)';
@@ -1248,16 +1369,24 @@
         document.getElementById('matrixHeaderTitle').textContent = 'Personal Performance Matrix';
       }
 
-      if (switchView) navigateTo('welcome');
+      if (switchView) {
+        navigateTo('welcome');
+      }
       saveState();
     }
 
     function logoutSession() {
+      if (currentSessionUser) addActivityLog('LOGOUT', 'User ended the active session');
+      saveState({ skipRender: true });
       currentSessionUser = null;
       localStorage.removeItem(STORAGE_KEY_SESSION);
+      localStorage.removeItem(STORAGE_KEY_SESSION_SECS);
+      localStorage.removeItem(STORAGE_KEY_VIEW);
+      sessionSeconds = 0;
       document.getElementById('loginScreen').classList.remove('hidden');
     }
 
+    // Trigger Forgot Password: sends to IT Badge, Message Box, & Workload Register
     function triggerForgotPasswordFromLogin() {
       const selectedName = document.getElementById('loginUserSelect').value;
       if (confirm(`Send formal password reset request for ${selectedName} to IT Administrator and Saravanan M?`)) {
@@ -1267,12 +1396,44 @@
           u.resetCount = (u.resetCount || 0) + 1;
         }
         resetAuditLog.unshift({ userName: selectedName, timestamp: Date.now() });
+        addActivityLog('PASSWORD_RESET_REQUESTED', `Reset requested for ${selectedName}`, 'WARN');
+
+        // 1. Add notification to Inbox (Message Box)
+        const notifId = 'ntf-reset-' + Date.now();
+        taskNotifications.unshift({
+          id: notifId,
+          taskId: 'tsk-reset-' + Date.now(),
+          sender: selectedName,
+          recipient: "IT Administrator",
+          taskTitle: `URGENT: Password Reset Request for ${selectedName}`,
+          time: new Date().toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }),
+          read: false
+        });
+
+        // 2. Add as an assigned task in Workload Register for IT Administrator
+        tasks.unshift({
+          id: 'tsk-reset-' + Date.now(),
+          serial_no: tasks.length + 1,
+          cw: 40,
+          title: `Authorize Password Reset & Issue OTP for ${selectedName}`,
+          category: "IT and Infrastructure",
+          requester: selectedName,
+          assigned_to: "IT Administrator",
+          status: "PENDING",
+          assigned_at: new Date().toISOString(),
+          target_deadline: new Date(Date.now() + 4 * 3600000).toISOString(),
+          actual_completed_at: null,
+          closure_note: null,
+          proof_image: null,
+          description: `Mandatory security verification requested by user ${selectedName}.`,
+          comments: []
+        });
+
         saveState();
-        alert(`Password reset request for ${selectedName} has been transmitted to IT & Administration!`);
+        alert(`Password reset request for ${selectedName} transmitted to IT Inbox and registered in Workload!`);
       }
     }
 
-    // 4. View Routing
     function navigateTo(viewId) {
       document.querySelectorAll('.view-panel').forEach(v => v.classList.add('hidden'));
       document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('bg-purple-950/60', 'text-white', 'border', 'border-purple-800'));
@@ -1295,19 +1456,32 @@
       };
       document.getElementById('currentViewBreadcrumb').textContent = labels[viewId] || 'Workspace';
 
+      // Always save active view
+      localStorage.setItem(STORAGE_KEY_VIEW, viewId);
+      if (currentSessionUser) {
+        const previous = localStorage.getItem('VISTA_PREVIOUS_VIEW_V7');
+        if (previous !== viewId) addActivityLog('NAVIGATION', `Opened ${labels[viewId] || viewId}`);
+        localStorage.setItem('VISTA_PREVIOUS_VIEW_V7', viewId);
+      }
+
       if (viewId === 'curves') renderVisualCurves();
       if (viewId === 'usage') renderUsageTable();
       if (viewId === 'itSecurity') renderITSecurityPortal();
       if (viewId === 'delegated') renderDelegatedTasks();
+      if (viewId === 'workload') renderWorkload();
+      if (viewId === 'messages') renderMessagesList();
+      if (viewId === 'usage') renderActivityLog();
     }
 
-    // 5. Interactive Talking Robot
     const ROBOT_PHRASES = [
       "I'm keeping track of all operational deadlines!",
       "Tip: Remember to upload photo proof to close your tasks.",
       "VISTA Innovation @ work — Everything is running smoothly.",
       "Great job staying on top of your deliverables today!",
-      "All background telemetry is verified."
+      "All background telemetry is verified.",
+      "Task completion velocity is exceeding target thresholds!",
+      "Remember to clear your comments log before the shift ends.",
+      "Precision execution leads to engineering excellence!"
     ];
     let phraseIndex = 0;
 
@@ -1323,7 +1497,6 @@
       setTimeout(() => bubble.classList.remove('scale-105'), 300);
     }
 
-    // 6. Operations Dashboard Rendering
     function renderDashboardMatrix() {
       const tbody = document.getElementById('matrixTableBody');
       const tfoot = document.getElementById('matrixTableFoot');
@@ -1332,7 +1505,6 @@
       tbody.innerHTML = '';
       let tot = 0, comp = 0, prog = 0, pend = 0, hold = 0, late = 0, over = 0;
 
-      // PRIVACY RULE: Regular Employees only see themselves; Admin sees everyone
       const rosterToDisplay = currentSessionUser.role === 'ADMIN'
         ? users.filter(u => u.role === 'EMPLOYEE' || u.name === 'Mohan' || u.name === 'Pradeepa')
         : users.filter(u => u.name.toLowerCase() === currentSessionUser.name.toLowerCase());
@@ -1383,7 +1555,6 @@
         `;
       });
 
-      // Update Cards
       document.getElementById('mTotal').textContent = tot;
       document.getElementById('mCompleted').textContent = comp;
       document.getElementById('mProgress').textContent = prog;
@@ -1420,21 +1591,23 @@
 
     function clearWorkloadFilters() {
       activeFilter = 'ALL';
-      document.getElementById('activeFilterBadge').textContent = 'My Execution Tasks';
+      document.getElementById('activeFilterBadge').textContent = 'All Assigned Tasks';
       renderWorkload();
     }
 
-    // 7. Workload Register Rendering (Assigned Date + Time Included)
+    // Workload Register Rendering (Guaranteed Full List Visibility)
     function renderWorkload() {
       const tbody = document.getElementById('workloadTableBody');
       if (!tbody || !currentSessionUser) return;
 
+      const countEl = document.getElementById('workloadAllCount');
+      if (countEl) countEl.textContent = currentSessionUser.role === 'ADMIN' ? tasks.length : tasks.filter(t => (t.assigned_to || '').toLowerCase().trim() === currentSessionUser.name.toLowerCase().trim()).length;
       tbody.innerHTML = '';
       let filtered = tasks;
 
-      // PRIVACY RULE: Workload Register only shows tasks assigned TO that person
+      // Filter tasks assigned to current user, unless role is ADMIN
       if (currentSessionUser.role !== 'ADMIN') {
-        filtered = filtered.filter(t => t.assigned_to.toLowerCase() === currentSessionUser.name.toLowerCase());
+        filtered = filtered.filter(t => t.assigned_to.toLowerCase().trim() === currentSessionUser.name.toLowerCase().trim());
       }
 
       if (activeFilter === 'COMPLETED') filtered = filtered.filter(t => t.status === 'COMPLETED');
@@ -1444,7 +1617,7 @@
       else if (activeFilter === 'OVERDUE') filtered = filtered.filter(t => evaluateTaskTiming(t).isOverdue);
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="12" class="p-8 text-center text-sub">No tasks currently assigned to your execution queue.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="12" class="p-8 text-center text-sub">No tasks in this view. Click "View All" to display all items.</td></tr>`;
         return;
       }
 
@@ -1454,10 +1627,13 @@
 
         let closureCountdownContent = '';
         if (isLocked) {
-          const closureTimeStr = task.actual_completed_at ? new Date(task.actual_completed_at).toLocaleString([], { dateStyle:'short', timeStyle:'short' }) : 'Closed';
+          const closureTimeStr = task.actual_completed_at 
+            ? new Date(task.actual_completed_at).toLocaleString([], { dateStyle:'short', timeStyle:'short' }) 
+            : (task.closure_note || 'Closed');
+
           closureCountdownContent = `
             <div class="leading-tight">
-              <span class="text-xs font-bold text-emerald-400 block"><i class="fa-solid fa-lock text-[10px]"></i> Closed: ${closureTimeStr}</span>
+              <span class="text-xs font-bold text-emerald-400 block"><i class="fa-solid fa-lock text-[10px]"></i> ${closureTimeStr}</span>
               <span class="text-[10px] ${evalRes.isLate ? 'text-amber-400' : 'text-emerald-500'} font-semibold font-mono">
                 ${evalRes.isLate ? 'Closed After Deadline' : 'Delivered On Time'}
               </span>
@@ -1473,10 +1649,8 @@
           `;
         }
 
-        // FORMATTED ASSIGNED DATE + TIME
         const assignedDateTimeStr = new Date(task.assigned_at).toLocaleString([], { dateStyle: 'numeric', timeStyle: 'short' });
 
-        // VIEW PROOF PERMISSION (Individual, Requester, or Saravanan M)
         const canViewProof = currentSessionUser.role === 'ADMIN' || 
                              task.assigned_to.toLowerCase() === currentSessionUser.name.toLowerCase() || 
                              task.requester.toLowerCase() === currentSessionUser.name.toLowerCase();
@@ -1485,24 +1659,19 @@
           <tr id="task-row-${task.id}" class="transition ${evalRes.rowClass}">
             <td class="p-3 text-center font-mono font-bold text-sub border-r border-slate-700/50">${idx + 1}</td>
             <td class="p-3 text-center font-mono text-purple-400 border-r border-slate-700/50">W${task.cw || '40'}</td>
-            
-            <!-- ASSIGNED DATE + TIME -->
             <td class="p-3 whitespace-nowrap text-sub font-mono border-r border-slate-700/50">${assignedDateTimeStr}</td>
-            
             <td class="p-3 text-sub border-r border-slate-700/50">${task.requester}</td>
             <td class="p-3 font-semibold text-purple-400 border-r border-slate-700/50">${task.assigned_to}</td>
             <td class="p-3 border-r border-slate-700/50">
               <span class="font-bold block">${task.title}</span>
               <span class="text-[10px] text-teal-400 font-mono">${task.category}</span>
             </td>
-            
-            <!-- STATUS COLUMN -->
             <td class="p-3 border-r border-slate-700/50">
               ${isLocked 
                 ? `<span class="px-2 py-1 bg-emerald-950 text-emerald-300 border border-emerald-800 rounded font-bold text-[11px] inline-flex items-center gap-1.5">
                      <i class="fa-solid fa-lock text-[10px]"></i> Completed
                    </span>`
-                : `<select onchange="handleTaskStatusChange('${task.id}', this.value)" class="inner-box border rounded px-2 py-1 text-[11px] font-semibold focus:outline-none">
+                : `<select onchange="handleTaskStatusChange('${task.id}', this.value)" class="bg-[#090d16] text-white border border-slate-700 rounded px-2 py-1 text-[11px] font-semibold focus:outline-none">
                      <option value="PENDING" ${task.status === 'PENDING' ? 'selected' : ''}>Pending</option>
                      <option value="ON_PROGRESS" ${task.status === 'ON_PROGRESS' ? 'selected' : ''}>On Progress</option>
                      <option value="DEPENDENCY_ON_HOLD" ${task.status === 'DEPENDENCY_ON_HOLD' ? 'selected' : ''}>Dependency / On Hold</option>
@@ -1510,16 +1679,12 @@
                    </select>`
               }
             </td>
-
             <td class="p-3 text-center whitespace-nowrap text-sub font-mono border-r border-slate-700/50">
               ${new Date(task.target_deadline).toLocaleString([], { dateStyle:'short', timeStyle:'short' })}
             </td>
-
             <td class="p-3 text-center whitespace-nowrap border-r border-slate-700/50">
               ${closureCountdownContent}
             </td>
-
-            <!-- PROOF COLUMN -->
             <td class="p-3 border-r border-slate-700/50">
               ${task.proof_image 
                 ? (canViewProof 
@@ -1531,15 +1696,12 @@
                 : `<span class="text-sub italic text-[11px]">No Photo Attached</span>`
               }
             </td>
-
-            <!-- COMMENTS COLUMN -->
             <td class="p-3 text-center border-r border-slate-700/50">
               <button onclick="openCommentsModal('${task.id}')" class="px-2.5 py-1 inner-box border hover:border-teal-400 text-teal-400 rounded text-[11px] font-mono flex items-center gap-1 mx-auto">
                 <i class="fa-solid fa-comment-dots"></i>
                 <span>${(task.comments && task.comments.length) || 0} Notes</span>
               </button>
             </td>
-
             <td class="p-3 text-center whitespace-nowrap">
               ${isLocked 
                 ? `<span class="text-emerald-400 font-bold text-[11px] flex items-center justify-center gap-1">
@@ -1555,7 +1717,6 @@
       });
     }
 
-    // 7B. Render Delegated Tasks Tracker
     function renderDelegatedTasks() {
       const tbody = document.getElementById('delegatedTableBody');
       if (!tbody || !currentSessionUser) return;
@@ -1563,7 +1724,7 @@
       tbody.innerHTML = '';
 
       const myDelegated = tasks.filter(t => 
-        currentSessionUser.role === 'ADMIN' || t.requester.toLowerCase() === currentSessionUser.name.toLowerCase()
+        currentSessionUser.role === 'ADMIN' || t.requester.toLowerCase().trim() === currentSessionUser.name.toLowerCase().trim()
       );
 
       if (myDelegated.length === 0) {
@@ -1576,7 +1737,7 @@
         const assignedDateTimeStr = new Date(task.assigned_at).toLocaleString([], { dateStyle: 'numeric', timeStyle: 'short' });
 
         tbody.innerHTML += `
-          <tr class="transition ${evalRes.rowClass}">
+          <tr id="task-row-${task.id}" class="transition ${evalRes.rowClass}">
             <td class="p-3 text-center font-mono font-bold text-sub border-r border-slate-700/50">${idx + 1}</td>
             <td class="p-3 whitespace-nowrap text-sub font-mono border-r border-slate-700/50">${assignedDateTimeStr}</td>
             <td class="p-3 font-semibold text-slate-300 border-r border-slate-700/50">${task.requester}</td>
@@ -1615,7 +1776,6 @@
       });
     }
 
-    // 8. Comments Engine
     function openCommentsModal(taskId) {
       activeCommentTaskId = taskId;
       const t = tasks.find(x => x.id === taskId);
@@ -1662,12 +1822,12 @@
           text: text,
           time: new Date().toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })
         });
+        addActivityLog('TASK_COMMENT_ADDED', `Comment added to “${t.title}”`);
         saveState();
         openCommentsModal(activeCommentTaskId);
       }
     }
 
-    // 9. Exact Timing Engine
     function evaluateTaskTiming(task) {
       const now = Date.now();
       const deadline = new Date(task.target_deadline).getTime();
@@ -1676,8 +1836,8 @@
         return { rowClass: 'row-hold', isOverdue: false, isLate: false, countdownText: 'Frozen' };
       }
 
-      if (task.status === 'COMPLETED' && task.actual_completed_at) {
-        const completedAt = new Date(task.actual_completed_at).getTime();
+      if (task.status === 'COMPLETED') {
+        const completedAt = task.actual_completed_at ? new Date(task.actual_completed_at).getTime() : now;
         const wasLate = completedAt > deadline;
         return {
           rowClass: wasLate ? 'row-yellow' : 'row-green',
@@ -1727,7 +1887,6 @@
       });
     }
 
-    // 10. Proof Upload with Canvas Auto-Compression (Eliminating Quota Errors)
     function initiateProofModal(taskId) {
       pendingProofTaskId = taskId;
       tempProofUrl = null;
@@ -1753,7 +1912,6 @@
       reader.onload = (event) => {
         const img = new Image();
         img.onload = () => {
-          // Compress on Canvas to guarantee storage quota stays < 50KB
           const canvas = document.createElement('canvas');
           const maxDim = 500;
           let w = img.width;
@@ -1788,10 +1946,11 @@
         t.proof_image = tempProofUrl;
         t.status = 'COMPLETED';
         t.actual_completed_at = new Date().toISOString();
-        t.closure_note = `Closed: ${new Date().toLocaleString()}`;
+        t.closure_note = `Closed: ${new Date().toLocaleString([], { dateStyle:'short', timeStyle:'short' })}`;
+        addActivityLog('TASK_COMPLETED', `Completed “${t.title}” with photographic proof`);
         saveState();
         closeProofModal();
-        alert('Photo verified! Task is now COMPLETED and permanently locked.');
+        alert('Photo verified! Task marked as COMPLETED.');
       }
     }
 
@@ -1806,6 +1965,7 @@
       }
 
       t.status = newStatus;
+      addActivityLog('TASK_STATUS_CHANGED', `Task “${t.title}” changed to ${newStatus}`);
       saveState();
     }
 
@@ -1814,7 +1974,7 @@
       w.document.write(`<img src="${dataUrl}" style="max-width:100%; height:auto;" alt="Proof" />`);
     }
 
-    // 11. Task Creation (Guaranteed Execution for Self & Others)
+    // Task Creation
     function openTaskModal() {
       populateFormDropdowns();
       
@@ -1822,8 +1982,12 @@
       now.setDate(now.getDate() + 1);
       const dateStr = now.toISOString().split('T')[0];
       
-      document.getElementById('taskTargetDate').value = dateStr;
-      document.getElementById('taskTargetTime').value = "18:00";
+      const dateInput = document.getElementById('taskTargetDate');
+      if (dateInput) dateInput.value = dateStr;
+
+      document.getElementById('taskClockHour').value = "06";
+      document.getElementById('taskClockMinute').value = "00";
+      document.getElementById('taskClockPeriod').value = "PM";
 
       document.getElementById('modalTask').classList.remove('hidden');
     }
@@ -1835,7 +1999,6 @@
     function populateFormDropdowns() {
       const ass = document.getElementById('taskAssignedSelect');
       if (ass && currentSessionUser) {
-        // Include self as top choice and everyone else
         ass.innerHTML = users.map(u => 
           `<option value="${u.name}" ${u.name === currentSessionUser.name ? 'selected' : ''}>
             ${u.name} ${u.name === currentSessionUser.name ? '(Myself)' : ''}
@@ -1844,70 +2007,65 @@
       }
     }
 
-    function handleCreateTask(e) {
-      e.preventDefault();
-      const title = document.getElementById('taskTitleInput').value.trim();
-      const category = document.getElementById('taskCategorySelect').value;
-      const assignedTo = document.getElementById('taskAssignedSelect').value;
-      const targetDate = document.getElementById('taskTargetDate').value;
-      const targetTime = document.getElementById('taskTargetTime').value;
-      const desc = document.getElementById('taskDescInput').value;
+    // Direct manual handler to guarantee task creation
+    function handleCreateTaskManual() {
+      try {
+        if (!currentSessionUser) { alert('Your session has expired. Please log in again.'); return; }
+        const titleInput = document.getElementById('taskTitleInput');
+        const title = titleInput.value.trim();
+        const category = document.getElementById('taskCategorySelect').value;
+        const assignedTo = document.getElementById('taskAssignedSelect').value.trim();
+        const targetDate = document.getElementById('taskTargetDate').value;
+        const desc = document.getElementById('taskDescInput').value.trim();
+        const hourVal = parseInt(document.getElementById('taskClockHour').value, 10);
+        const minVal = document.getElementById('taskClockMinute').value;
+        const periodVal = document.getElementById('taskClockPeriod').value;
 
-      if (!targetDate || !targetTime) {
-        alert("Please specify target date and time.");
-        return;
+        if (!title) return alert('Please enter a task title.');
+        if (!assignedTo) return alert('Please select an assignee.');
+        if (!targetDate) return alert('Please choose a target deadline date.');
+        if (!users.some(u => u.name.toLowerCase().trim() === assignedTo.toLowerCase().trim())) return alert('Selected assignee is no longer available. Refresh the user list and try again.');
+
+        let hour24 = hourVal;
+        if (periodVal === 'PM' && hourVal < 12) hour24 += 12;
+        if (periodVal === 'AM' && hourVal === 12) hour24 = 0;
+        const deadline = new Date(`${targetDate}T${String(hour24).padStart(2,'0')}:${minVal}:00`);
+        if (Number.isNaN(deadline.getTime()) || deadline.getTime() <= Date.now()) return alert('Please select a future deadline.');
+
+        const now = new Date();
+        const newTaskId = `tsk-${Date.now()}-${Math.random().toString(36).slice(2,6)}`;
+        const creatorName = currentSessionUser.name;
+        const newTaskObj = {
+          id: newTaskId,
+          serial_no: tasks.length + 1,
+          cw: 40,
+          title, category, requester: creatorName, assigned_to: assignedTo,
+          status: 'PENDING', assigned_at: now.toISOString(), target_deadline: deadline.toISOString(),
+          actual_completed_at: null, closure_note: null, proof_image: null, description: desc, comments: []
+        };
+        tasks.unshift(newTaskObj);
+        tasks.forEach((t, i) => t.serial_no = i + 1);
+        taskNotifications.unshift({
+          id: `ntf-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,
+          taskId: newTaskId, sender: creatorName, recipient: assignedTo, taskTitle: title,
+          time: now.toLocaleString([], { dateStyle:'short', timeStyle:'short' }), read: assignedTo.toLowerCase() === creatorName.toLowerCase()
+        });
+        addActivityLog('TASK_CREATED', `Created “${title}” and assigned it to ${assignedTo}`);
+        activeFilter = 'ALL';
+        const badge = document.getElementById('activeFilterBadge'); if (badge) badge.textContent = 'All Assigned Tasks';
+        if (!saveState()) return;
+        closeTaskModal();
+        titleInput.value = '';
+        document.getElementById('taskDescInput').value = '';
+        navigateTo(assignedTo.toLowerCase() === creatorName.toLowerCase() ? 'workload' : 'delegated');
+        alert(`Task successfully published and assigned to ${assignedTo}.`);
+      } catch (err) {
+        console.error('Task creation failed:', err);
+        alert(`Unable to assign task: ${err.message || 'Unexpected error'}`);
       }
-
-      const combinedDeadline = new Date(`${targetDate}T${targetTime}:00`).toISOString();
-      const newTaskId = 'tsk-' + Date.now();
-      const creatorName = currentSessionUser ? currentSessionUser.name : "Saravanan M";
-
-      // Reset filter so newly added task is immediately visible
-      activeFilter = 'ALL';
-      document.getElementById('activeFilterBadge').textContent = 'My Execution Tasks';
-
-      tasks.unshift({
-        id: newTaskId,
-        serial_no: tasks.length + 1,
-        cw: 40,
-        title,
-        category,
-        requester: creatorName,
-        assigned_to: assignedTo,
-        status: "PENDING",
-        assigned_at: new Date().toISOString(),
-        target_deadline: combinedDeadline,
-        actual_completed_at: null,
-        closure_note: null,
-        proof_image: null,
-        description: desc,
-        comments: []
-      });
-
-      taskNotifications.unshift({
-        id: 'ntf-' + Date.now(),
-        taskId: newTaskId,
-        sender: creatorName,
-        recipient: assignedTo,
-        taskTitle: title,
-        time: new Date().toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }),
-        read: false
-      });
-
-      saveState();
-      closeTaskModal();
-      document.getElementById('taskTitleInput').value = '';
-      document.getElementById('taskDescInput').value = '';
-      
-      if (assignedTo.toLowerCase() === creatorName.toLowerCase()) {
-        navigateTo('workload');
-      } else {
-        navigateTo('delegated');
-      }
-      alert(`Task successfully created and published for ${assignedTo}!`);
     }
 
-    // 12. Task Message Box with Sl.No
+    // Task Message Box: lists all assignment notifications & password alerts
     function renderMessagesList() {
       const container = document.getElementById('messagesListContainer');
       const badge = document.getElementById('unreadMessagesHeaderBadge');
@@ -1916,11 +2074,14 @@
 
       container.innerHTML = '';
 
-      const relevantNotifs = currentSessionUser.role === 'ADMIN'
+      const relevantNotifs = (currentSessionUser.role === 'ADMIN' || currentSessionUser.role === 'IT')
         ? taskNotifications
-        : taskNotifications.filter(n => n.recipient.toLowerCase() === currentSessionUser.name.toLowerCase() || n.sender.toLowerCase() === currentSessionUser.name.toLowerCase());
+        : taskNotifications.filter(n => 
+            n.recipient.toLowerCase().trim() === currentSessionUser.name.toLowerCase().trim() || 
+            n.sender.toLowerCase().trim() === currentSessionUser.name.toLowerCase().trim()
+          );
 
-      const unreadCount = relevantNotifs.filter(n => !n.read && n.recipient.toLowerCase() === currentSessionUser.name.toLowerCase()).length;
+      const unreadCount = relevantNotifs.filter(n => !n.read && n.recipient.toLowerCase().trim() === currentSessionUser.name.toLowerCase().trim()).length;
       
       badge.textContent = `${unreadCount} Unread`;
       if (unreadCount > 0) {
@@ -1936,7 +2097,7 @@
       }
 
       relevantNotifs.forEach((item, idx) => {
-        const isUnreadForMe = !item.read && item.recipient.toLowerCase() === currentSessionUser.name.toLowerCase();
+        const isUnreadForMe = !item.read && item.recipient.toLowerCase().trim() === currentSessionUser.name.toLowerCase().trim();
 
         container.innerHTML += `
           <div onclick="jumpToTaskFromNotification('${item.id}', '${item.taskId}')" 
@@ -1953,9 +2114,9 @@
 
               <div>
                 <p class="text-xs font-bold">
-                  Task <span class="text-teal-400">"${item.taskTitle}"</span> assigned by <strong class="text-purple-400">${item.sender}</strong> to <strong class="text-sky-400">${item.recipient}</strong>
+                  Task <span class="text-teal-400">"${item.taskTitle}"</span> from <strong class="text-purple-400">${item.sender}</strong> to <strong class="text-sky-400">${item.recipient}</strong>
                 </p>
-                <p class="text-[10px] text-sub mt-0.5 font-mono">Dispatched at ${item.time} • Click to open and clear notification</p>
+                <p class="text-[10px] text-sub mt-0.5 font-mono">Dispatched at ${item.time} • Click to open</p>
               </div>
             </div>
 
@@ -1980,7 +2141,7 @@
       saveState();
 
       const t = tasks.find(x => x.id === taskId);
-      if (t && t.assigned_to.toLowerCase() === currentSessionUser.name.toLowerCase()) {
+      if (t && (currentSessionUser.role === 'ADMIN' || currentSessionUser.role === 'IT' || t.assigned_to.toLowerCase() === currentSessionUser.name.toLowerCase())) {
         navigateTo('workload');
       } else {
         navigateTo('delegated');
@@ -1996,7 +2157,6 @@
       }, 150);
     }
 
-    // 13. Visual Curves Plotting
     function renderVisualCurves() {
       const svg = document.getElementById('svgVelocityCurve');
       if (!svg || !currentSessionUser) return;
@@ -2042,27 +2202,27 @@
       document.getElementById('labelPieProg').textContent = `In Progress (${progCount})`;
     }
 
-    // 14. Usage & Activity Table (Strict Privacy Engine)
+    // Usage & System Activity Table (Real Time Dynamic Tracking)
     function renderUsageTable() {
       const tbody = document.getElementById('usageTableBody');
       const subtitle = document.getElementById('usageScopeSubtitle');
       if (!tbody || !currentSessionUser) return;
 
-      // RULE: Only Saravanan M (ADMIN) sees everyone; Employees only see their own time!
       const visibleUsers = (currentSessionUser.role === 'ADMIN' || currentSessionUser.name === 'Saravanan M')
         ? users
         : users.filter(u => u.name.toLowerCase() === currentSessionUser.name.toLowerCase());
 
       if (subtitle) {
         subtitle.textContent = (currentSessionUser.role === 'ADMIN' || currentSessionUser.name === 'Saravanan M')
-          ? "Master company-wide usage and active session logs across all personnel."
+          ? "Company-wide usage data stored in this browser; active session is tracked live."
           : `Personal platform activity metrics for ${currentSessionUser.name}.`;
       }
 
       tbody.innerHTML = visibleUsers.map(u => {
         const isCurrent = currentSessionUser && u.name === currentSessionUser.name;
-        const totalSecs = (u.usageSeconds || 3600) + (isCurrent ? sessionSeconds : 0);
-        const hrs = (totalSecs / 3600).toFixed(1);
+        const totalSecs = (u.usageSeconds || 0);
+        const hrs = (totalSecs / 3600).toFixed(2);
+        const mins = Math.floor(totalSecs / 60);
 
         return `
           <tr class="hover:bg-purple-950/20 font-mono">
@@ -2073,16 +2233,27 @@
             <td class="p-3 text-sub font-sans">${u.role}</td>
             <td class="p-3">${isCurrent ? '<span class="text-emerald-400 font-bold">Active Now</span>' : '<span class="text-sub">Offline</span>'}</td>
             <td class="p-3 text-sub">${isCurrent ? document.getElementById('sessionDurationDisplay').textContent : '-'}</td>
-            <td class="p-3 text-teal-400 font-bold">${hrs} Hours</td>
+            <td class="p-3 text-teal-400 font-bold">${hrs} Hours (${mins} mins)</td>
           </tr>
         `;
       }).join('');
     }
 
-    // 15. IT Security Portal
+    // IT Security Portal
     function renderITSecurityPortal() {
       const tbody = document.getElementById('itUserTableBody');
+      const itBadge = document.getElementById('itResetAlertBadge');
       if (!tbody) return;
+
+      const pendingResetTotal = users.filter(u => u.pendingReset).length;
+      if (itBadge) {
+        if (pendingResetTotal > 0) {
+          itBadge.textContent = pendingResetTotal;
+          itBadge.classList.remove('hidden');
+        } else {
+          itBadge.classList.add('hidden');
+        }
+      }
 
       const now = Date.now();
       const oneDay = 86400000;
@@ -2127,10 +2298,21 @@
     }
 
     function executePasswordReset(targetName) {
-      if (confirm(`Authorize immediate password reset for ${targetName}? A temporary OTP passkey will be generated.`)) {
+      if (confirm(`Authorize immediate password reset for ${targetName}? Temporary OTP passkey will be generated.`)) {
         const u = users.find(x => x.name === targetName);
         if (u) u.pendingReset = false;
+        addActivityLog('PASSWORD_RESET_EXECUTED', `Password reset authorized for ${targetName}`);
         resetAuditLog.unshift({ userName: targetName, timestamp: Date.now() });
+
+        // Complete any pending reset tasks assigned to IT Administrator
+        tasks.forEach(t => {
+          if (t.title.includes(targetName) && t.category === "IT and Infrastructure" && t.status === "PENDING") {
+            t.status = "COMPLETED";
+            t.actual_completed_at = new Date().toISOString();
+            t.closure_note = "Reset executed by IT Admin";
+          }
+        });
+
         saveState();
         alert(`Passkey for ${targetName} has been successfully reset!`);
       }
@@ -2154,6 +2336,7 @@
         resetCount: 0,
         pendingReset: false
       });
+      addActivityLog('USER_PROVISIONED', `Created user ${name} with role ${role}`);
 
       saveState();
       populateFormDropdowns();
@@ -2162,6 +2345,10 @@
       document.getElementById('newUserName').value = '';
       alert(`User "${name}" provisioned with role [${role}]!`);
     }
+
+    window.addEventListener('beforeunload', () => {
+      if (currentSessionUser) saveState({ skipRender: true });
+    });
 
     function toggleTheme() {
       const htmlEl = document.documentElement;
@@ -2172,9 +2359,11 @@
       if (!isDark) {
         themeLabel.textContent = "Light";
         themeIcon.className = "fa-solid fa-sun text-amber-500";
+        localStorage.setItem(STORAGE_KEY_THEME, 'light');
       } else {
         themeLabel.textContent = "Dark";
         themeIcon.className = "fa-solid fa-moon text-purple-400";
+        localStorage.setItem(STORAGE_KEY_THEME, 'dark');
       }
     }
   </script>
